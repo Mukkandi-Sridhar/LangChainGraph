@@ -1,0 +1,1829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LangChain + LangGraph Complete Code Reference</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #0d1117; color: #e6edf3; }
+  .header { background: #161b22; border-bottom: 1px solid #30363d; padding: 16px 24px; display: flex; align-items: center; gap: 12px; }
+  .header h1 { font-size: 18px; font-weight: 600; color: #58a6ff; }
+  .header span { font-size: 13px; color: #8b949e; }
+  .layout { display: flex; height: calc(100vh - 57px); }
+  .sidebar { width: 260px; background: #161b22; border-right: 1px solid #30363d; overflow-y: auto; flex-shrink: 0; }
+  .section-title { font-size: 11px; font-weight: 600; color: #8b949e; text-transform: uppercase; letter-spacing: 0.8px; padding: 16px 16px 6px; }
+  .nav-item { padding: 7px 16px; font-size: 13px; color: #c9d1d9; cursor: pointer; border-left: 3px solid transparent; transition: all 0.15s; display: flex; align-items: center; gap: 8px; }
+  .nav-item:hover { background: #1f2937; color: #58a6ff; }
+  .nav-item.active { background: #0d1f34; color: #58a6ff; border-left-color: #58a6ff; }
+  .nav-item .num { font-size: 11px; color: #484f58; min-width: 20px; }
+  .content { flex: 1; overflow-y: auto; padding: 24px; }
+  .code-section { display: none; }
+  .code-section.active { display: block; }
+  .file-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .filename { font-size: 14px; font-weight: 600; color: #f0883e; font-family: 'Courier New', monospace; }
+  .badge { font-size: 11px; padding: 2px 8px; border-radius: 12px; background: #1f6feb22; color: #58a6ff; border: 1px solid #1f6feb55; }
+  .desc { font-size: 13px; color: #8b949e; margin-bottom: 16px; line-height: 1.6; }
+  pre { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px; overflow-x: auto; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.7; }
+  .kw { color: #ff7b72; }
+  .fn { color: #d2a8ff; }
+  .st { color: #a5d6ff; }
+  .cm { color: #8b949e; font-style: italic; }
+  .cl { color: #ffa657; }
+  .dc { color: #79c0ff; }
+  .nm { color: #e6edf3; }
+  .copy-btn { margin-left: auto; font-size: 12px; padding: 4px 12px; background: #21262d; border: 1px solid #30363d; border-radius: 6px; color: #8b949e; cursor: pointer; transition: all 0.15s; }
+  .copy-btn:hover { background: #30363d; color: #e6edf3; }
+  .divider { height: 1px; background: #21262d; margin: 8px 0; }
+  .search { padding: 10px 16px; }
+  .search input { width: 100%; padding: 6px 10px; background: #0d1117; border: 1px solid #30363d; border-radius: 6px; color: #e6edf3; font-size: 12px; outline: none; }
+  .search input:focus { border-color: #58a6ff; }
+  .tag { font-size: 11px; color: #3fb950; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>⚡ LangChain + LangGraph</h1>
+  <span>Complete Code Reference — All 38 Files from the Bootcamp</span>
+</div>
+<div class="layout">
+<div class="sidebar">
+  <div class="search"><input type="text" id="searchBox" placeholder="Search files..." oninput="filterNav(this.value)"></div>
+  <div id="navList">
+    <div class="section-title">🔗 LangChain Core</div>
+    <div class="nav-item active" onclick="show(0)" id="nav0"><span class="num">01</span> chat_model_gemini.py</div>
+    <div class="nav-item" onclick="show(1)" id="nav1"><span class="num">02</span> chatbot.py</div>
+    <div class="nav-item" onclick="show(2)" id="nav2"><span class="num">03</span> prompt_template.py</div>
+    <div class="nav-item" onclick="show(3)" id="nav3"><span class="num">04</span> message_placeholder.py</div>
+    <div class="nav-item" onclick="show(4)" id="nav4"><span class="num">05</span> structured_output.py</div>
+    <div class="nav-item" onclick="show(5)" id="nav5"><span class="num">06</span> detailed_structured_output.py</div>
+    <div class="nav-item" onclick="show(6)" id="nav6"><span class="num">07</span> pydantic_structured_output.py</div>
+    <div class="section-title">📦 Output Parsers</div>
+    <div class="nav-item" onclick="show(7)" id="nav7"><span class="num">08</span> str_output_parser.py</div>
+    <div class="nav-item" onclick="show(8)" id="nav8"><span class="num">09</span> structured_output_parser.py</div>
+    <div class="nav-item" onclick="show(9)" id="nav9"><span class="num">10</span> pydantic_parser.py</div>
+    <div class="section-title">⛓️ Chains</div>
+    <div class="nav-item" onclick="show(10)" id="nav10"><span class="num">11</span> sequential_chain.py</div>
+    <div class="nav-item" onclick="show(11)" id="nav11"><span class="num">12</span> conditional_chain.py</div>
+    <div class="nav-item" onclick="show(12)" id="nav12"><span class="num">13</span> parallel_chain.py</div>
+    <div class="nav-item" onclick="show(13)" id="nav13"><span class="num">14</span> llm_chains.py</div>
+    <div class="section-title">🔍 RAG &amp; Embeddings</div>
+    <div class="nav-item" onclick="show(14)" id="nav14"><span class="num">15</span> huggingface_embeddings.py</div>
+    <div class="nav-item" onclick="show(15)" id="nav15"><span class="num">16</span> basic_rag.py</div>
+    <div class="section-title">🔄 Runnables</div>
+    <div class="nav-item" onclick="show(16)" id="nav16"><span class="num">17</span> runnable_sequence.py</div>
+    <div class="nav-item" onclick="show(17)" id="nav17"><span class="num">18</span> runnable_parallel.py</div>
+    <div class="section-title">📄 Document Loaders</div>
+    <div class="nav-item" onclick="show(18)" id="nav18"><span class="num">19</span> text_loader.py</div>
+    <div class="nav-item" onclick="show(19)" id="nav19"><span class="num">20</span> pdf_loader.py</div>
+    <div class="nav-item" onclick="show(20)" id="nav20"><span class="num">21</span> directory_loader.py</div>
+    <div class="nav-item" onclick="show(21)" id="nav21"><span class="num">22</span> web_base_loader.py</div>
+    <div class="nav-item" onclick="show(22)" id="nav22"><span class="num">23</span> csv_loader.py</div>
+    <div class="section-title">🗄️ Vector Stores &amp; Retrievers</div>
+    <div class="nav-item" onclick="show(23)" id="nav23"><span class="num">24</span> vector_store.py</div>
+    <div class="nav-item" onclick="show(24)" id="nav24"><span class="num">25</span> wikipedia_retriever.py</div>
+    <div class="nav-item" onclick="show(25)" id="nav25"><span class="num">26</span> vector_store_retriever.py</div>
+    <div class="nav-item" onclick="show(26)" id="nav26"><span class="num">27</span> youtube_rag.py</div>
+    <div class="section-title">🛠️ Tools &amp; Agents</div>
+    <div class="nav-item" onclick="show(27)" id="nav27"><span class="num">28</span> tools.py</div>
+    <div class="nav-item" onclick="show(28)" id="nav28"><span class="num">29</span> structured_tool.py</div>
+    <div class="nav-item" onclick="show(29)" id="nav29"><span class="num">30</span> toolkit.py</div>
+    <div class="nav-item" onclick="show(30)" id="nav30"><span class="num">31</span> tool_binding.py</div>
+    <div class="nav-item" onclick="show(31)" id="nav31"><span class="num">32</span> enforced_tool_execution.py</div>
+    <div class="nav-item" onclick="show(32)" id="nav32"><span class="num">33</span> injected_tool.py</div>
+    <div class="section-title">🕸️ LangGraph</div>
+    <div class="nav-item" onclick="show(33)" id="nav33"><span class="num">34</span> basic_graph.py</div>
+    <div class="nav-item" onclick="show(34)" id="nav34"><span class="num">35</span> complex_graph.py</div>
+    <div class="nav-item" onclick="show(35)" id="nav35"><span class="num">36</span> conditional_graph.py</div>
+    <div class="nav-item" onclick="show(36)" id="nav36"><span class="num">37</span> complex_conditional.py</div>
+    <div class="nav-item" onclick="show(37)" id="nav37"><span class="num">38</span> number_game.py</div>
+    <div class="nav-item" onclick="show(38)" id="nav38"><span class="num">39</span> ai_agent_chatbot.py</div>
+    <div class="nav-item" onclick="show(39)" id="nav39"><span class="num">40</span> langgraph_tool_nodes.py</div>
+    <div class="nav-item" onclick="show(40)" id="nav40"><span class="num">41</span> email_crafter_agent.py</div>
+    <div class="nav-item" onclick="show(41)" id="nav41"><span class="num">42</span> pdf_rag_agent.py</div>
+  </div>
+</div>
+<div class="content" id="mainContent">
+
+<!-- 0: chat_model_gemini.py -->
+<div class="code-section active" id="sec0">
+<div class="file-header"><span class="filename">chat_model_gemini.py</span><span class="badge">LangChain Core</span><button class="copy-btn" onclick="copyCode(0)">Copy</button></div>
+<div class="desc">First interaction with a Gemini LLM using LangChain. Invokes the model with a prompt and prints the content of the response.</div>
+<pre id="code0"><span class="kw">from</span> <span class="dc">langchain_google_genai</span> <span class="kw">import</span> <span class="cl">ChatGoogleGenerativeAI</span>
+<span class="kw">from</span> <span class="dc">dotenv</span> <span class="kw">import</span> <span class="fn">load_dotenv</span>
+
+<span class="fn">load_dotenv</span>()
+
+model = <span class="cl">ChatGoogleGenerativeAI</span>(model=<span class="st">"gemini-2.5-flash"</span>)
+
+prompt = <span class="st">"What is the capital city of USA"</span>
+result = model.<span class="fn">invoke</span>(prompt)
+
+<span class="fn">print</span>(result.content)
+</pre>
+</div>
+
+<!-- 1: chatbot.py -->
+<div class="code-section" id="sec1">
+<div class="file-header"><span class="filename">chatbot.py</span><span class="badge">Chat History</span><button class="copy-btn" onclick="copyCode(1)">Copy</button></div>
+<div class="desc">Multi-turn conversational chatbot that maintains chat history using SystemMessage, HumanMessage, and AIMessage — so the model can remember past conversation context.</div>
+<pre id="code1"><span class="kw">from</span> <span class="dc">langchain_google_genai</span> <span class="kw">import</span> <span class="cl">ChatGoogleGenerativeAI</span>
+<span class="kw">from</span> <span class="dc">langchain_core.messages</span> <span class="kw">import</span> <span class="cl">SystemMessage</span>, <span class="cl">HumanMessage</span>, <span class="cl">AIMessage</span>
+<span class="kw">from</span> <span class="dc">dotenv</span> <span class="kw">import</span> <span class="fn">load_dotenv</span>
+
+<span class="fn">load_dotenv</span>()
+
+model = <span class="cl">ChatGoogleGenerativeAI</span>(model=<span class="st">"gemini-2.5-flash"</span>)
+
+chat_history = [
+    <span class="cl">SystemMessage</span>(content=<span class="st">"You are a helpful AI assistant."</span>)
+]
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    user_input = <span class="fn">input</span>(<span class="st">"You: "</span>)
+    <span class="kw">if</span> user_input.<span class="fn">lower</span>() == <span class="st">"exit"</span>:
+        <span class="kw">break</span>
+    chat_history.<span class="fn">append</span>(<span class="cl">HumanMessage</span>(content=user_input))
+    result = model.<span class="fn">invoke</span>(chat_history)
+    chat_history.<span class="fn">append</span>(<span class="cl">AIMessage</span>(content=result.content))
+    <span class="fn">print</span>(<span class="st">f"AI: </span>{result.content}<span class="st">"</span>)
+
+<span class="fn">print</span>(chat_history)
+</pre>
+</div>
+
+<!-- 2: prompt_template.py -->
+<div class="code-section" id="sec2">
+<div class="file-header"><span class="filename">prompt_template.py</span><span class="badge">ChatPromptTemplate</span><button class="copy-btn" onclick="copyCode(2)">Copy</button></div>
+<div class="desc">Demonstrates ChatPromptTemplate with dynamic placeholders for domain and topic. Shows how to create reusable, structured prompts for the AI.</div>
+<pre id="code2"><span class="kw">from</span> <span class="dc">langchain_core.prompts</span> <span class="kw">import</span> <span class="cl">ChatPromptTemplate</span>
+<span class="kw">from</span> <span class="dc">langchain_google_genai</span> <span class="kw">import</span> <span class="cl">ChatGoogleGenerativeAI</span>
+<span class="kw">from</span> <span class="dc">dotenv</span> <span class="kw">import</span> <span class="fn">load_dotenv</span>
+
+<span class="fn">load_dotenv</span>()
+
+chat_template = <span class="cl">ChatPromptTemplate</span>([
+    (<span class="st">"system"</span>, <span class="st">"You are a helpful {domain} expert."</span>),
+    (<span class="st">"human"</span>, <span class="st">"Explain in simple terms the concept of {topic}."</span>)
+])
+
+prompt = chat_template.<span class="fn">invoke</span>({
+    <span class="st">"domain"</span>: <span class="st">"quantum physics"</span>,
+    <span class="st">"topic"</span>: <span class="st">"wormhole"</span>
+})
+
+<span class="fn">print</span>(prompt)
+
+<span class="cm"># Optional: invoke the model with the generated prompt</span>
+model = <span class="cl">ChatGoogleGenerativeAI</span>(model=<span class="st">"gemini-2.5-flash"</span>)
+result = model.<span class="fn">invoke</span>(prompt)
+<span class="fn">print</span>(result.content)
+</pre>
+</div>
+
+<!-- 3: message_placeholder.py -->
+<div class="code-section" id="sec3">
+<div class="file-header"><span class="filename">message_placeholder.py</span><span class="badge">MessagePlaceholder</span><button class="copy-btn" onclick="copyCode(3)">Copy</button></div>
+<div class="desc">Uses MessagesPlaceholder to dynamically inject chat history into a prompt template. Loads history from a file and adds a new user query at the end.</div>
+<pre id="code3"><span class="kw">from</span> <span class="dc">langchain_core.prompts</span> <span class="kw">import</span> <span class="cl">ChatPromptTemplate</span>, <span class="cl">MessagesPlaceholder</span>
+<span class="kw">from</span> <span class="dc">dotenv</span> <span class="kw">import</span> <span class="fn">load_dotenv</span>
+
+<span class="fn">load_dotenv</span>()
+
+<span class="cm"># chatbot_history.txt contents (example):
+# Human: I want to request a refund for my order.
+# AI: I understand you'd like a refund. Can you provide your order ID?</span>
+
+chat_template = <span class="cl">ChatPromptTemplate</span>([
+    (<span class="st">"system"</span>, <span class="st">"You are a very helpful customer support agent."</span>),
+    <span class="cl">MessagesPlaceholder</span>(variable_name=<span class="st">"chat_history"</span>),
+    (<span class="st">"human"</span>, <span class="st">"{query}"</span>)
+])
+
+<span class="cm"># Load chat history from file</span>
+chat_history_list = []
+<span class="kw">with</span> <span class="fn">open</span>(<span class="st">"chatbot_history.txt"</span>) <span class="kw">as</span> file:
+    chat_history_list.<span class="fn">extend</span>(file.<span class="fn">read</span>().<span class="fn">splitlines</span>())
+
+<span class="cm"># Create new prompt with loaded history and new query</span>
+new_prompt = chat_template.<span class="fn">invoke</span>({
+    <span class="st">"chat_history"</span>: chat_history_list,
+    <span class="st">"query"</span>: <span class="st">"Where is my refund?"</span>
+})
+
+<span class="fn">print</span>(new_prompt)
+</pre>
+</div>
+
+<!-- 4: structured_output.py -->
+<div class="code-section" id="sec4">
+<div class="file-header"><span class="filename">structured_output.py</span><span class="badge">Structured Output</span><button class="copy-btn" onclick="copyCode(4)">Copy</button></div>
+<div class="desc">Uses TypedDict schema to get structured output (summary + sentiment) from the LLM instead of free-form text. The model is wrapped with with_structured_output().</div>
+<pre id="code4"><span class="kw">from</span> <span class="dc">langchain_google_genai</span> <span class="kw">import</span> <span class="cl">ChatGoogleGenerativeAI</span>
+<span class="kw">from</span> <span class="dc">dotenv</span> <span class="kw">import</span> <span class="fn">load_dotenv</span>
+<span class="kw">from</span> <span class="dc">typing</span> <span class="kw">import</span> TypedDict
+
+<span class="fn">load_dotenv</span>()
+
+model = <span class="cl">ChatGoogleGenerativeAI</span>(model=<span class="st">"gemini-2.5-flash"</span>)
+
+<span class="kw">class</span> <span class="cl">Review</span>(TypedDict):
+    summary: str
+    sentiment: str
+
+structured_model = model.<span class="fn">with_structured_output</span>(<span class="cl">Review</span>)
+
+prompt = <span class="st">"This hardware is great but the software feels kind of bloated. "</span> \
+         <span class="st">"So many boilerplate apps and my phone keeps hanging when I play PUBG."</span>
+
+response = structured_model.<span class="fn">invoke</span>(prompt)
+<span class="fn">print</span>(response)
+</pre>
+</div>
+
+<!-- 5: detailed_structured_output.py -->
+<div class="code-section" id="sec5">
+<div class="file-header"><span class="filename">detailed_structured_output.py</span><span class="badge">Advanced Structured</span><button class="copy-btn" onclick="copyCode(5)">Copy</button></div>
+<div class="desc">Advanced structured output with multiple fields, Annotated types with descriptions, and Optional fields (pros/cons). Extracts key themes, summary, sentiment, pros and cons from a review.</div>
+<pre id="code5"><span class="kw">from</span> <span class="dc">langchain_google_genai</span> <span class="kw">import</span> <span class="cl">ChatGoogleGenerativeAI</span>
+<span class="kw">from</span> <span class="dc">dotenv</span> <span class="kw">import</span> <span class="fn">load_dotenv</span>
+<span class="kw">from</span> <span class="dc">typing</span> <span class="kw">import</span> TypedDict, Annotated, Optional, List
+
+<span class="fn">load_dotenv</span>()
+
+model = <span class="cl">ChatGoogleGenerativeAI</span>(model=<span class="st">"gemini-2.5-flash"</span>)
+
+<span class="kw">class</span> <span class="cl">Review</span>(TypedDict):
+    key_themes: Annotated[List[str], <span class="st">"Write down all the important themes discussed in the review in a list"</span>]
+    summary: Annotated[str, <span class="st">"Must write down a brief summary of the review"</span>]
+    sentiment: Annotated[str, <span class="st">"Must return a sentiment of the review either positive or negative"</span>]
+    pros: Annotated[Optional[List[str]], <span class="st">"Write down all the pros inside a list"</span>]
+    cons: Annotated[Optional[List[str]], <span class="st">"Write down all the cons inside a list"</span>]
+
+structured_model = model.<span class="fn">with_structured_output</span>(<span class="cl">Review</span>)
+
+prompt = <span class="st">"""The Google Pixel 9 Pro is a powerhouse with its Tensor G5 chipset offering
+significant gains in gaming performance compared to the Pixel 9 Pro.
+The camera is stunning with exceptional low-light shots. Battery life is solid
+at around a day of heavy use. The display is vibrant and smooth at 120Hz.
+However, the price is steep and some users may find the software too opinionated."""</span>
+
+response = structured_model.<span class="fn">invoke</span>(prompt)
+<span class="fn">print</span>(response)
+</pre>
+</div>
+
+<!-- 6: pydantic_structured_output.py -->
+<div class="code-section" id="sec6">
+<div class="file-header"><span class="filename">pydantic_structured_output.py</span><span class="badge">Pydantic Schema</span><button class="copy-btn" onclick="copyCode(6)">Copy</button></div>
+<div class="desc">Uses a Pydantic BaseModel class for type-safe, validated structured output. Uses Literal for constraining the sentiment field to "positive" or "negative" only.</div>
+<pre id="code6"><span class="kw">from</span> <span class="dc">langchain_google_genai</span> <span class="kw">import</span> <span class="cl">ChatGoogleGenerativeAI</span>
+<span class="kw">from</span> <span class="dc">dotenv</span> <span class="kw">import</span> <span class="fn">load_dotenv</span>
+<span class="kw">from</span> <span class="dc">typing</span> <span class="kw">import</span> Annotated, Literal, Optional
+<span class="kw">from</span> <span class="dc">pydantic</span> <span class="kw">import</span> BaseModel, Field
+
+<span class="fn">load_dotenv</span>()
+
+model = <span class="cl">ChatGoogleGenerativeAI</span>(model=<span class="st">"gemini-2.5-flash"</span>)
+
+<span class="kw">class</span> <span class="cl">Review</span>(BaseModel):
+    key_themes: List[str] = <span class="cl">Field</span>(description=<span class="st">"Write down three key themes discussed in the review in a list"</span>)
+    summary: str = <span class="cl">Field</span>(description=<span class="st">"A brief summary of the review"</span>)
+    sentiment: Literal[<span class="st">"positive"</span>, <span class="st">"negative"</span>] = <span class="cl">Field</span>(description=<span class="st">"Return the sentiment of the review either positive or negative"</span>)
+    name: Optional[str] = <span class="cl">Field</span>(default=<span class="kw">None</span>, description=<span class="st">"Write down the name of the reviewer"</span>)
+
+<span class="kw">from</span> <span class="dc">typing</span> <span class="kw">import</span> List
+
+structured_model = model.<span class="fn">with_structured_output</span>(<span class="cl">Review</span>, strict=<span class="kw">True</span>)
+
+prompt = <span class="st">"""The Google Pixel 9 Pro is a powerhouse with its Tensor G5 chipset.
+Gaming performance is exceptional. Camera quality is outstanding.
+Battery life lasts a full day. However the price is steep.
+Reviewed by Abishek"""</span>
+
+response = structured_model.<span class="fn">invoke</span>(prompt)
+<span class="fn">print</span>(response)
+</pre>
+</div>
+
+<!-- 7: str_output_parser.py -->
+<div class="code-section" id="sec7">
+<div class="file-header"><span class="filename">str_output_parser.py</span><span class="badge">StrOutputParser + Chain</span><button class="copy-btn" onclick="copyCode(7)">Copy</button></div>
+<div class="desc">Demonstrates StrOutputParser to clean model outputs, and chains (using the pipe | operator) to link PromptTemplate → Model → Parser → PromptTemplate → Model → Parser in a multi-step pipeline.</div>
+<pre id="code7"><span class="kw">from</span> <span class="dc">langchain_google_genai</span> <span class="kw">import</span> <span class="cl">ChatGoogleGenerativeAI</span>
+<span class="kw">from</span> <span class="dc">dotenv</span> <span class="kw">import</span> <span class="fn">load_dotenv</span>
+<span class="kw">from</span> <span class="dc">langchain_core.prompts</span> <span class="kw">import</span> <span class="cl">PromptTemplate</span>
+<span class="kw">from</span> <span class="dc">langchain_core.output_parsers</span> <span class="kw">import</span> <span class="cl">StrOutputParser</span>
+
+<span class="fn">load_dotenv</span>()
+
+model = <span class="cl">ChatGoogleGenerativeAI</span>(model=<span class="st">"gemini-2.5-flash"</span>)
+
+template1 = <span class="cl">PromptTemplate</span>(
+    template=<span class="st">"Write a detailed report on {topic}."</span>,
+    input_variables=[<span class="st">"topic"</span>]
+)
+
+template2 = <span class="cl">PromptTemplate</span>(
+    template=<span class="st">"Write a three-point summary on the following text:\n\n{text}"</span>,
+    input_variables=[<span class="st">"text"</span>]
+)
+
+parser = <span class="cl">StrOutputParser</span>()
+
+<span class="cm"># Chain: template1 | model | parser | template2 | model | parser</span>
+chain = template1 | model | parser | template2 | model | parser
+
+result = chain.<span class="fn">invoke</span>({<span class="st">"topic"</span>: <span class="st">"English Premier League 2023-2024"</span>})
+<span class="fn">print</span>(result)
+</pre>
+</div>
+
+<!-- 8: structured_output_parser.py -->
+<div class="code-section" id="sec8">
+<div class="file-header"><span class="filename">structured_output_parser.py</span><span class="badge">StructuredOutputParser</span><button class="copy-btn" onclick="copyCode(8)">Copy</button></div>
+<div class="desc">Uses ResponseSchema + StructuredOutputParser to ask the model for three specific facts in JSON format. OutputFixingParser auto-corrects malformed output.</div>
+<pre id="code8"><span class="kw">from</span> <span class="dc">langchain_google_genai</span> <span class="kw">import</span> <span class="cl">ChatGoogleGenerativeAI</span>
+<span class="kw">from</span> <span class="dc">dotenv</span> <span class="kw">import</span> <span class="fn">load_dotenv</span>
+<span class="kw">from</span> <span class="dc">langchain_core.prompts</span> <span class="kw">import</span> <span class="cl">PromptTemplate</span>
+<span class="kw">from</span> <span class="dc">langchain.output_parsers</span> <span class="kw">import</span> <span class="cl">StructuredOutputParser</span>, <span class="cl">ResponseSchema</span>
+<span class="kw">from</span> <span class="dc">langchain.output_parsers</span> <span class="kw">import</span> <span class="cl">OutputFixingParser</span>
+
+<span class="fn">load_dotenv</span>()
+
+model = <span class="cl">ChatGoogleGenerativeAI</span>(model=<span class="st">"gemini-2.5-flash"</span>)
+
+<span class="cm"># Define schema</span>
+schema = [
+    <span class="cl">ResponseSchema</span>(name=<span class="st">"fact_1"</span>, description=<span class="st">"First fact about black hole"</span>),
+    <span class="cl">ResponseSchema</span>(name=<span class="st">"fact_2"</span>, description=<span class="st">"Second fact about black hole"</span>),
+    <span class="cl">ResponseSchema</span>(name=<span class="st">"fact_3"</span>, description=<span class="st">"Third fact about black hole"</span>),
+]
+
+parser = <span class="cl">StructuredOutputParser</span>.<span class="fn">from_response_schemas</span>(schema)
+fixing_parser = <span class="cl">OutputFixingParser</span>.<span class="fn">from_llm</span>(llm=model, parser=parser)
+
+template = <span class="cl">PromptTemplate</span>(
+    template=<span class="st">"Give me three facts about {topic}.\nReturn only valid JSON that follows this format:\n{response_format}"</span>,
+    input_variables=[<span class="st">"topic"</span>],
+    partial_variables={<span class="st">"response_format"</span>: parser.<span class="fn">get_format_instructions</span>()}
+)
+
+chain = template | model | fixing_parser
+
+result = chain.<span class="fn">invoke</span>({<span class="st">"topic"</span>: <span class="st">"black hole"</span>})
+<span class="fn">print</span>(result)
+</pre>
+</div>
+
+<!-- 9: pydantic_parser.py -->
+<div class="code-section" id="sec9">
+<div class="file-header"><span class="filename">pydantic_parser.py</span><span class="badge">PydanticOutputParser</span><button class="copy-btn" onclick="copyCode(9)">Copy</button></div>
+<div class="desc">Uses PydanticOutputParser for type-safe validation. Defines a Person schema with name, age, and city, then chains it with a prompt to generate a fictional person from a given place.</div>
+<pre id="code9"><span class="kw">from</span> <span class="dc">langchain_google_genai</span> <span class="kw">import</span> <span class="cl">ChatGoogleGenerativeAI</span>
+<span class="kw">from</span> <span class="dc">dotenv</span> <span class="kw">import</span> <span class="fn">load_dotenv</span>
+<span class="kw">from</span> <span class="dc">langchain_core.output_parsers</span> <span class="kw">import</span> <span class="cl">PydanticOutputParser</span>
+<span class="kw">from</span> <span class="dc">langchain_core.prompts</span> <span class="kw">import</span> <span class="cl">PromptTemplate</span>
+<span class="kw">from</span> <span class="dc">pydantic</span> <span class="kw">import</span> BaseModel, Field
+<span class="kw">from</span> <span class="dc">typing</span> <span class="kw">import</span> Optional
+
+<span class="fn">load_dotenv</span>()
+
+model = <span class="cl">ChatGoogleGenerativeAI</span>(model=<span class="st">"gemini-2.5-flash"</span>)
+
+<span class="kw">class</span> <span class="cl">Person</span>(BaseModel):
+    name: str = <span class="cl">Field</span>(description=<span class="st">"The person's full name"</span>)
+    age: int = <span class="cl">Field</span>(description=<span class="st">"The person's age, must be greater than 18"</span>, gt=<span class="nm">18</span>, lt=<span class="nm">100</span>)
+    city: str = <span class="cl">Field</span>(description=<span class="st">"The city where the person lives"</span>)
+
+parser = <span class="cl">PydanticOutputParser</span>(pydantic_object=<span class="cl">Person</span>)
+
+template = <span class="cl">PromptTemplate</span>(
+    template=<span class="st">"""Give me the name, age and city of a fictional person from {place_name}.
+Make sure the age is greater than 18 and less than 100.
+Return the response in following format:\n{response_format}"""</span>,
+    input_variables=[<span class="st">"place_name"</span>],
+    partial_variables={<span class="st">"response_format"</span>: parser.<span class="fn">get_format_instructions</span>()}
+)
+
+chain = template | model | parser
+
+result = chain.<span class="fn">invoke</span>({<span class="st">"place_name"</span>: <span class="st">"Nepal"</span>})
+<span class="fn">print</span>(result)
+</pre>
+</div>
+
+<!-- 10: sequential_chain.py -->
+<div class="code-section" id="sec10">
+<div class="file-header"><span class="filename">sequential_chain.py</span><span class="badge">Sequential Chain</span><button class="copy-btn" onclick="copyCode(10)">Copy</button></div>
+<div class="desc">Sequential chain that first generates a detailed report on a topic, then summarizes it into three points. The output of step 1 flows automatically into step 2.</div>
+<pre id="code10"><span class="kw">from</span> <span class="dc">langchain_google_genai</span> <span class="kw">import</span> <span class="cl">ChatGoogleGenerativeAI</span>
+<span class="kw">from</span> <span class="dc">dotenv</span> <span class="kw">import</span> <span class="fn">load_dotenv</span>
+<span class="kw">from</span> <span class="dc">langchain_core.prompts</span> <span class="kw">import</span> <span class="cl">PromptTemplate</span>
+<span class="kw">from</span> <span class="dc">langchain_core.output_parsers</span> <span class="kw">import</span> <span class="cl">StrOutputParser</span>
+
+<span class="fn">load_dotenv</span>()
+
+model = <span class="cl">ChatGoogleGenerativeAI</span>(model=<span class="st">"gemini-2.5-flash"</span>)
+
+prompt1 = <span class="cl">PromptTemplate</span>(
+    template=<span class="st">"Generate a detailed report on the topic: {topic}"</span>,
+    input_variables=[<span class="st">"topic"</span>]
+)
+
+prompt2 = <span class="cl">PromptTemplate</span>(
+    template=<span class="st">"Generate a three-point summary on the following text:\n\n{text}"</span>,
+    input_variables=[<span class="st">"text"</span>]
+)
+
+parser = <span class="cl">StrOutputParser</span>()
+
+<span class="cm"># Sequential chain: prompt1 → model → parser → prompt2 → model → parser</span>
+chain = prompt1 | model | parser | prompt2 | model | parser
+
+result = chain.<span class="fn">invoke</span>({<span class="st">"topic"</span>: <span class="st">"3I Atlas Interstellar Object"</span>})
+<span class="fn">print</span>(result)
+</pre>
+</div>
+
+<!-- 11: conditional_chain.py -->
+<div class="code-section" id="sec11">
+<div class="file-header"><span class="filename">conditional_chain.py</span><span class="badge">Conditional Chain</span><button class="copy-btn" onclick="copyCode(11)">Copy</button></div>
+<div class="desc">Combines a classifier chain with a branch chain. First classifies feedback as positive or negative, then routes to an appropriate response prompt using RunnableBranch and RunnableLambda.</div>
+<pre id="code11"><span class="kw">from</span> <span class="dc">langchain_google_genai</span> <span class="kw">import</span> <span class="cl">ChatGoogleGenerativeAI</span>
+<span class="kw">from</span> <span class="dc">dotenv</span> <span class="kw">import</span> <span class="fn">load_dotenv</span>
+<span class="kw">from</span> <span class="dc">langchain_core.prompts</span> <span class="kw">import</span> <span class="cl">PromptTemplate</span>
+<span class="kw">from</span> <span class="dc">langchain_core.output_parsers</span> <span class="kw">import</span> <span class="cl">StrOutputParser</span>, <span class="cl">PydanticOutputParser</span>
+<span class="kw">from</span> <span class="dc">langchain_core.runnables</span> <span class="kw">import</span> <span class="cl">RunnableBranch</span>, <span class="cl">RunnableLambda</span>
+<span class="kw">from</span> <span class="dc">pydantic</span> <span class="kw">import</span> BaseModel, Field
+<span class="kw">from</span> <span class="dc">typing</span> <span class="kw">import</span> Literal
+
+<span class="fn">load_dotenv</span>()
+
+model = <span class="cl">ChatGoogleGenerativeAI</span>(model=<span class="st">"gemini-2.5-flash"</span>)
+parser = <span class="cl">StrOutputParser</span>()
+
+<span class="kw">class</span> <span class="cl">Feedback</span>(BaseModel):
+    sentiment: Literal[<span class="st">"positive"</span>, <span class="st">"negative"</span>] = <span class="cl">Field</span>(description=<span class="st">"The sentiment of the feedback provided"</span>)
+
+parser2 = <span class="cl">PydanticOutputParser</span>(pydantic_object=<span class="cl">Feedback</span>)
+
+prompt1 = <span class="cl">PromptTemplate</span>(
+    template=<span class="st">"Classify the sentiment of the following feedback text into positive or negative:\n{feedback}\n{response_format}"</span>,
+    input_variables=[<span class="st">"feedback"</span>],
+    partial_variables={<span class="st">"response_format"</span>: parser2.<span class="fn">get_format_instructions</span>()}
+)
+
+prompt2 = <span class="cl">PromptTemplate</span>(
+    template=<span class="st">"Write an appropriate response to this positive feedback:\n{feedback}"</span>,
+    input_variables=[<span class="st">"feedback"</span>]
+)
+
+prompt3 = <span class="cl">PromptTemplate</span>(
+    template=<span class="st">"Write an appropriate response to this negative feedback:\n{feedback}"</span>,
+    input_variables=[<span class="st">"feedback"</span>]
+)
+
+<span class="cm"># Classifier chain</span>
+classifier_chain = prompt1 | model | parser2
+
+<span class="cm"># Branch chain</span>
+branch_chain = <span class="cl">RunnableBranch</span>(
+    (<span class="kw">lambda</span> x: x.sentiment == <span class="st">"positive"</span>, prompt2 | model | parser),
+    (<span class="kw">lambda</span> x: x.sentiment == <span class="st">"negative"</span>, prompt3 | model | parser),
+    <span class="cl">RunnableLambda</span>(<span class="kw">lambda</span> x: <span class="st">"No valid sentiment found"</span>)
+)
+
+<span class="cm"># Combined chain</span>
+chain = classifier_chain | branch_chain
+
+result = chain.<span class="fn">invoke</span>({<span class="st">"feedback"</span>: <span class="st">"The phone is actually amazing!"</span>})
+<span class="fn">print</span>(result)
+</pre>
+</div>
+
+<!-- 12: parallel_chain.py -->
+<div class="code-section" id="sec12">
+<div class="file-header"><span class="filename">parallel_chain.py</span><span class="badge">Parallel Chain</span><button class="copy-btn" onclick="copyCode(12)">Copy</button></div>
+<div class="desc">Runs two chains in parallel — one generates notes, another generates quiz questions from the same topic. Both outputs are then merged into a single document by a final chain.</div>
+<pre id="code12"><span class="kw">from</span> <span class="dc">langchain_google_genai</span> <span class="kw">import</span> <span class="cl">ChatGoogleGenerativeAI</span>
+<span class="kw">from</span> <span class="dc">dotenv</span> <span class="kw">import</span> <span class="fn">load_dotenv</span>
+<span class="kw">from</span> <span class="dc">langchain_core.prompts</span> <span class="kw">import</span> <span class="cl">PromptTemplate</span>
+<span class="kw">from</span> <span class="dc">langchain_core.output_parsers</span> <span class="kw">import</span> <span class="cl">StrOutputParser</span>
+<span class="kw">from</span> <span class="dc">langchain_core.runnables</span> <span class="kw">import</span> <span class="cl">RunnableParallel</span>
+
+<span class="fn">load_dotenv</span>()
+
+model = <span class="cl">ChatGoogleGenerativeAI</span>(model=<span class="st">"gemini-2.5-flash"</span>)
+parser = <span class="cl">StrOutputParser</span>()
+
+prompt1 = <span class="cl">PromptTemplate</span>(
+    template=<span class="st">"Generate short and simple notes for the following topic:\n{topic}"</span>,
+    input_variables=[<span class="st">"topic"</span>]
+)
+
+prompt2 = <span class="cl">PromptTemplate</span>(
+    template=<span class="st">"Generate five short question-answers from the following text:\n{topic}"</span>,
+    input_variables=[<span class="st">"topic"</span>]
+)
+
+prompt3 = <span class="cl">PromptTemplate</span>(
+    template=<span class="st">"Merge the provided notes and quiz into a single document.\nNotes: {notes}\nQuiz: {quiz}"</span>,
+    input_variables=[<span class="st">"notes"</span>, <span class="st">"quiz"</span>]
+)
+
+<span class="cm"># Parallel chain runs notes and quiz simultaneously</span>
+runnable_chain = <span class="cl">RunnableParallel</span>({
+    <span class="st">"notes"</span>: prompt1 | model | parser,
+    <span class="st">"quiz"</span>:  prompt2 | model | parser
+})
+
+<span class="cm"># Final chain merges both outputs</span>
+final_chain = prompt3 | model | parser
+
+chain = runnable_chain | final_chain
+
+text = <span class="st">"""Support Vector Machines (SVM) are supervised learning models used for
+classification and regression. They find the optimal hyperplane that maximizes
+the margin between different classes."""</span>
+
+result = chain.<span class="fn">invoke</span>({<span class="st">"topic"</span>: text})
+<span class="fn">print</span>(result)
+</pre>
+</div>
+
+<!-- 13: llm_chains.py -->
+<div class="code-section" id="sec13">
+<div class="file-header"><span class="filename">llm_chains.py</span><span class="badge">LLMChain</span><button class="copy-btn" onclick="copyCode(13)">Copy</button></div>
+<div class="desc">Uses the legacy LLMChain (now deprecated, replaced by RunnableSequence). Connects a PromptTemplate to a model to suggest a catchy blog title about a given topic.</div>
+<pre id="code13"><span class="kw">from</span> <span class="dc">langchain_google_genai</span> <span class="kw">import</span> <span class="cl">ChatGoogleGenerativeAI</span>
+<span class="kw">from</span> <span class="dc">dotenv</span> <span class="kw">import</span> <span class="fn">load_dotenv</span>
+<span class="kw">from</span> <span class="dc">langchain_core.prompts</span> <span class="kw">import</span> <span class="cl">PromptTemplate</span>
+<span class="kw">from</span> <span class="dc">langchain.chains</span> <span class="kw">import</span> <span class="cl">LLMChain</span>
+
+<span class="fn">load_dotenv</span>()
+
+model = <span class="cl">ChatGoogleGenerativeAI</span>(model=<span class="st">"gemini-2.5-flash"</span>)
+
+prompt = <span class="cl">PromptTemplate</span>(
+    template=<span class="st">"Suggest a catchy blog title about {topic}."</span>,
+    input_variables=[<span class="st">"topic"</span>]
+)
+
+<span class="cm"># Note: LLMChain is deprecated. Prefer: prompt | model | StrOutputParser()</span>
+chain = <span class="cl">LLMChain</span>(llm=model, prompt=prompt)
+
+topic = <span class="st">"3I Atlas Interstellar Object"</span>
+response = chain.<span class="fn">invoke</span>({<span class="st">"topic"</span>: topic})
+<span class="fn">print</span>(response)
+</pre>
+</div>
+
+<!-- 14: huggingface_embeddings.py -->
+<div class="code-section" id="sec14">
+<div class="file-header"><span class="filename">huggingface_embeddings.py</span><span class="badge">Embeddings</span><button class="copy-btn" onclick="copyCode(14)">Copy</button></div>
+<div class="desc">Generates text embeddings using HuggingFace sentence-transformers model. Compares semantic similarity between sentences using cosine similarity from scikit-learn.</div>
+<pre id="code14"><span class="kw">from</span> <span class="dc">langchain_huggingface</span> <span class="kw">import</span> <span class="cl">HuggingFaceEmbeddings</span>
+<span class="kw">from</span> <span class="dc">dotenv</span> <span class="kw">import</span> <span class="fn">load_dotenv</span>
+<span class="kw">from</span> <span class="dc">sklearn.metrics.pairwise</span> <span class="kw">import</span> <span class="fn">cosine_similarity</span>
+<span class="kw">import</span> <span class="dc">os</span>
+
+<span class="fn">load_dotenv</span>()
+
+<span class="cm"># pip install langchain-huggingface sentence-transformers scikit-learn</span>
+embeddings = <span class="cl">HuggingFaceEmbeddings</span>(
+    model_name=<span class="st">"sentence-transformers/all-MiniLM-L6-v2"</span>
+)
+
+text = <span class="st">"Delhi is the capital of India"</span>
+
+documents = [
+    <span class="st">"Delhi is the capital of India"</span>,
+    <span class="st">"Kolkata is the capital of West Bengal"</span>,
+    <span class="st">"Paris is the capital of France"</span>,
+    <span class="st">"I love pizza"</span>
+]
+
+<span class="cm"># Embed a single query</span>
+result = embeddings.<span class="fn">embed_query</span>(text)
+<span class="fn">print</span>(<span class="st">"Query Embedding (first 5 values):"</span>, result[:<span class="nm">5</span>])
+
+<span class="cm"># Embed a list of documents</span>
+result_doc = embeddings.<span class="fn">embed_documents</span>(documents)
+<span class="fn">print</span>(<span class="st">f"Number of document embeddings: </span>{<span class="fn">len</span>(result_doc)}<span class="st">"</span>)
+
+<span class="cm"># Compute cosine similarity between query and each document</span>
+similarity_scores = <span class="fn">cosine_similarity</span>([result], result_doc)
+<span class="fn">print</span>(<span class="st">"Similarity Scores:"</span>)
+<span class="kw">for</span> i, score <span class="kw">in</span> <span class="fn">enumerate</span>(similarity_scores[<span class="nm">0</span>]):
+    <span class="fn">print</span>(<span class="st">f"  '{documents[i]}' → {score:.4f}"</span>)
+</pre>
+</div>
+
+<!-- 15: basic_rag.py -->
+<div class="code-section" id="sec15">
+<div class="file-header"><span class="filename">basic_rag.py</span><span class="badge">RAG Pipeline</span><button class="copy-btn" onclick="copyCode(15)">Copy</button></div>
+<div class="desc">Full RAG pipeline: loads a text file → splits into chunks → embeds with Google Generative AI embeddings → stores in FAISS vector store → creates retriever → answers questions from the document.</div>
+<pre id="code15"><span class="kw">from</span> <span class="dc">langchain_google_genai</span> <span class="kw">import</span> <span class="cl">ChatGoogleGenerativeAI</span>, <span class="cl">GoogleGenerativeAIEmbeddings</span>
+<span class="kw">from</span> <span class="dc">dotenv</span> <span class="kw">import</span> <span class="fn">load_dotenv</span>
+<span class="kw">from</span> <span class="dc">langchain_community.document_loaders</span> <span class="kw">import</span> <span class="cl">TextLoader</span>
+<span class="kw">from</span> <span class="dc">langchain.text_splitter</span> <span class="kw">import</span> <span class="cl">RecursiveCharacterTextSplitter</span>
+<span class="kw">from</span> <span class="dc">langchain_community.vectorstores</span> <span class="kw">import</span> FAISS
+<span class="kw">from</span> <span class="dc">langchain.chains</span> <span class="kw">import</span> <span class="cl">RetrievalQA</span>
+
+<span class="fn">load_dotenv</span>()
+
+<span class="cm"># Step 1: Load document</span>
+loader = <span class="cl">TextLoader</span>(<span class="st">"docs.txt"</span>)
+documents = loader.<span class="fn">load</span>()
+
+<span class="cm"># Step 2: Split text into smaller chunks</span>
+text_splitter = <span class="cl">RecursiveCharacterTextSplitter</span>(
+    chunk_size=<span class="nm">500</span>,
+    chunk_overlap=<span class="nm">50</span>
+)
+docs = text_splitter.<span class="fn">split_documents</span>(documents)
+
+<span class="cm"># Step 3: Create embeddings</span>
+embeddings = <span class="cl">GoogleGenerativeAIEmbeddings</span>(model=<span class="st">"models/gemini-embedding-001"</span>)
+
+<span class="cm"># Step 4: Store embeddings in FAISS vector store</span>
+vector_store = FAISS.<span class="fn">from_documents</span>(docs, embeddings)
+
+<span class="cm"># Step 5: Create a retriever</span>
+retriever = vector_store.<span class="fn">as_retriever</span>()
+
+<span class="cm"># Step 6: Initialize the LLM</span>
+llm = <span class="cl">ChatGoogleGenerativeAI</span>(model=<span class="st">"gemini-2.5-flash"</span>)
+
+<span class="cm"># Step 7: Create a RetrievalQA chain</span>
+chain = <span class="cl">RetrievalQA</span>.<span class="fn">from_chain_type</span>(llm=llm, retriever=retriever)
+
+<span class="cm"># Step 8: Query</span>
+query = <span class="st">"What are the key takeaways from the document?"</span>
+response = chain.<span class="fn">invoke</span>(query)
+<span class="fn">print</span>(response[<span class="st">"result"</span>])
+</pre>
+</div>
+
+<!-- 16: runnable_sequence.py -->
+<div class="code-section" id="sec16">
+<div class="file-header"><span class="filename">runnable_sequence.py</span><span class="badge">RunnableSequence</span><button class="copy-btn" onclick="copyCode(16)">Copy</button></div>
+<div class="desc">Uses RunnableSequence to chain: write a joke about a topic → explain the joke. Each step's output becomes the next step's input in a clear, composable pipeline.</div>
+<pre id="code16"><span class="kw">from</span> <span class="dc">langchain_google_genai</span> <span class="kw">import</span> <span class="cl">ChatGoogleGenerativeAI</span>
+<span class="kw">from</span> <span class="dc">dotenv</span> <span class="kw">import</span> <span class="fn">load_dotenv</span>
+<span class="kw">from</span> <span class="dc">langchain_core.prompts</span> <span class="kw">import</span> <span class="cl">PromptTemplate</span>
+<span class="kw">from</span> <span class="dc">langchain_core.output_parsers</span> <span class="kw">import</span> <span class="cl">StrOutputParser</span>
+<span class="kw">from</span> <span class="dc">langchain_core.runnables</span> <span class="kw">import</span> <span class="cl">RunnableSequence</span>
+
+<span class="fn">load_dotenv</span>()
+
+prompt1 = <span class="cl">PromptTemplate</span>(
+    template=<span class="st">"Write a joke about {topic}."</span>,
+    input_variables=[<span class="st">"topic"</span>]
+)
+
+prompt2 = <span class="cl">PromptTemplate</span>(
+    template=<span class="st">"Explain the following joke:\n{joke}"</span>,
+    input_variables=[<span class="st">"joke"</span>]
+)
+
+model = <span class="cl">ChatGoogleGenerativeAI</span>(model=<span class="st">"gemini-2.5-flash"</span>)
+parser = <span class="cl">StrOutputParser</span>()
+
+<span class="cm"># RunnableSequence chains steps together</span>
+chain = <span class="cl">RunnableSequence</span>(prompt1, model, parser, prompt2, model, parser)
+
+result = chain.<span class="fn">invoke</span>({<span class="st">"topic"</span>: <span class="st">"monkey"</span>})
+<span class="fn">print</span>(result)
+</pre>
+</div>
+
+<!-- 17: runnable_parallel.py -->
+<div class="code-section" id="sec17">
+<div class="file-header"><span class="filename">runnable_parallel.py</span><span class="badge">RunnableParallel</span><button class="copy-btn" onclick="copyCode(17)">Copy</button></div>
+<div class="desc">Runs two RunnableSequences in parallel — one generates a tweet and another generates a LinkedIn post about the same topic simultaneously using RunnableParallel.</div>
+<pre id="code17"><span class="kw">from</span> <span class="dc">langchain_google_genai</span> <span class="kw">import</span> <span class="cl">ChatGoogleGenerativeAI</span>
+<span class="kw">from</span> <span class="dc">dotenv</span> <span class="kw">import</span> <span class="fn">load_dotenv</span>
+<span class="kw">from</span> <span class="dc">langchain_core.prompts</span> <span class="kw">import</span> <span class="cl">PromptTemplate</span>
+<span class="kw">from</span> <span class="dc">langchain_core.output_parsers</span> <span class="kw">import</span> <span class="cl">StrOutputParser</span>
+<span class="kw">from</span> <span class="dc">langchain_core.runnables</span> <span class="kw">import</span> <span class="cl">RunnableSequence</span>, <span class="cl">RunnableParallel</span>
+
+<span class="fn">load_dotenv</span>()
+
+prompt1 = <span class="cl">PromptTemplate</span>(
+    template=<span class="st">"Generate a tweet about {topic}."</span>,
+    input_variables=[<span class="st">"topic"</span>]
+)
+
+prompt2 = <span class="cl">PromptTemplate</span>(
+    template=<span class="st">"Generate a LinkedIn post about {topic}."</span>,
+    input_variables=[<span class="st">"topic"</span>]
+)
+
+model = <span class="cl">ChatGoogleGenerativeAI</span>(model=<span class="st">"gemini-2.5-flash"</span>)
+parser = <span class="cl">StrOutputParser</span>()
+
+<span class="cm"># Parallel chain runs both sequences simultaneously on the same input</span>
+par_chain = <span class="cl">RunnableParallel</span>({
+    <span class="st">"tweet"</span>:    <span class="cl">RunnableSequence</span>(prompt1, model, parser),
+    <span class="st">"linkedin"</span>: <span class="cl">RunnableSequence</span>(prompt2, model, parser)
+})
+
+result = par_chain.<span class="fn">invoke</span>({<span class="st">"topic"</span>: <span class="st">"RunnableParallel in LangChain"</span>})
+<span class="fn">print</span>(<span class="st">"Tweet:\n"</span>, result[<span class="st">"tweet"</span>])
+<span class="fn">print</span>(<span class="st">"\nLinkedIn:\n"</span>, result[<span class="st">"linkedin"</span>])
+</pre>
+</div>
+
+<!-- 18: text_loader.py -->
+<div class="code-section" id="sec18">
+<div class="file-header"><span class="filename">text_loader.py</span><span class="badge">Document Loaders</span><button class="copy-btn" onclick="copyCode(18)">Copy</button></div>
+<div class="desc">Loads a plain text file using TextLoader. Prints the page content and metadata of the loaded document.</div>
+<pre id="code18"><span class="kw">from</span> <span class="dc">langchain_community.document_loaders</span> <span class="kw">import</span> <span class="cl">TextLoader</span>
+
+loader = <span class="cl">TextLoader</span>(<span class="st">"docs.txt"</span>, encoding=<span class="st">"utf-8"</span>)
+docs = loader.<span class="fn">load</span>()
+
+<span class="fn">print</span>(<span class="fn">type</span>(docs))           <span class="cm"># list</span>
+<span class="fn">print</span>(docs[<span class="nm">0</span>].page_content) <span class="cm"># text content</span>
+<span class="fn">print</span>(docs[<span class="nm">0</span>].metadata)     <span class="cm"># {'source': 'docs.txt'}</span>
+</pre>
+</div>
+
+<!-- 19: pdf_loader.py -->
+<div class="code-section" id="sec19">
+<div class="file-header"><span class="filename">pdf_loader.py</span><span class="badge">Document Loaders</span><button class="copy-btn" onclick="copyCode(19)">Copy</button></div>
+<div class="desc">Loads a PDF file using PyPDFLoader. Each page becomes a separate document with page number metadata. Install: pip install pypdf</div>
+<pre id="code19"><span class="kw">from</span> <span class="dc">langchain_community.document_loaders</span> <span class="kw">import</span> <span class="cl">PyPDFLoader</span>
+
+<span class="cm"># pip install pypdf</span>
+loader = <span class="cl">PyPDFLoader</span>(<span class="st">"document.pdf"</span>)
+docs = loader.<span class="fn">load</span>()
+
+<span class="fn">print</span>(<span class="st">f"Total pages: </span>{<span class="fn">len</span>(docs)}<span class="st">"</span>)
+<span class="fn">print</span>(docs[<span class="nm">0</span>].page_content)
+<span class="fn">print</span>(docs[<span class="nm">0</span>].metadata)  <span class="cm"># {'source': 'document.pdf', 'page': 0}</span>
+</pre>
+</div>
+
+<!-- 20: directory_loader.py -->
+<div class="code-section" id="sec20">
+<div class="file-header"><span class="filename">directory_loader.py</span><span class="badge">Document Loaders</span><button class="copy-btn" onclick="copyCode(20)">Copy</button></div>
+<div class="desc">Loads all PDF files from a directory using DirectoryLoader with PyPDFLoader. Ideal for bulk ingestion of documents.</div>
+<pre id="code20"><span class="kw">from</span> <span class="dc">langchain_community.document_loaders</span> <span class="kw">import</span> <span class="cl">DirectoryLoader</span>, <span class="cl">PyPDFLoader</span>
+
+loader = <span class="cl">DirectoryLoader</span>(
+    path=<span class="st">"books"</span>,
+    glob=<span class="st">"**/*.pdf"</span>,
+    loader_cls=<span class="cl">PyPDFLoader</span>
+)
+
+<span class="kw">for</span> document <span class="kw">in</span> loader.<span class="fn">lazy_load</span>():
+    <span class="fn">print</span>(document.metadata)
+</pre>
+</div>
+
+<!-- 21: web_base_loader.py -->
+<div class="code-section" id="sec21">
+<div class="file-header"><span class="filename">web_base_loader.py</span><span class="badge">Document Loaders</span><button class="copy-btn" onclick="copyCode(21)">Copy</button></div>
+<div class="desc">Scrapes a webpage and loads its content as a LangChain document using WebBaseLoader. Install: pip install beautifulsoup4</div>
+<pre id="code21"><span class="kw">from</span> <span class="dc">langchain_community.document_loaders</span> <span class="kw">import</span> <span class="cl">WebBaseLoader</span>
+
+<span class="cm"># pip install beautifulsoup4</span>
+url = <span class="st">"https://www.example.com/car-review"</span>
+
+loader = <span class="cl">WebBaseLoader</span>(url)
+docs = loader.<span class="fn">load</span>()
+
+<span class="fn">print</span>(docs[<span class="nm">0</span>].page_content)
+<span class="fn">print</span>(docs[<span class="nm">0</span>].metadata)
+</pre>
+</div>
+
+<!-- 22: csv_loader.py -->
+<div class="code-section" id="sec22">
+<div class="file-header"><span class="filename">csv_loader.py</span><span class="badge">Document Loaders</span><button class="copy-btn" onclick="copyCode(22)">Copy</button></div>
+<div class="desc">Loads a CSV file using CSVLoader. Each row becomes a separate document with source and page metadata.</div>
+<pre id="code22"><span class="kw">from</span> <span class="dc">langchain_community.document_loaders</span> <span class="kw">import</span> <span class="cl">CSVLoader</span>
+
+loader = <span class="cl">CSVLoader</span>(file_path=<span class="st">"data.csv"</span>)
+data = loader.<span class="fn">load</span>()
+
+<span class="fn">print</span>(data)
+<span class="fn">print</span>(data[<span class="nm">0</span>].page_content)
+<span class="fn">print</span>(data[<span class="nm">0</span>].metadata)
+</pre>
+</div>
+
+<!-- 23: vector_store.py -->
+<div class="code-section" id="sec23">
+<div class="file-header"><span class="filename">vector_store.py</span><span class="badge">VectorStore</span><button class="copy-btn" onclick="copyCode(23)">Copy</button></div>
+<div class="desc">Creates a Chroma vector store from IPL player documents using HuggingFace embeddings. Runs a semantic similarity search query and returns the top 3 most relevant documents.</div>
+<pre id="code23"><span class="kw">from</span> <span class="dc">langchain_huggingface</span> <span class="kw">import</span> <span class="cl">HuggingFaceEmbeddings</span>
+<span class="kw">from</span> <span class="dc">langchain_chroma</span> <span class="kw">import</span> <span class="cl">Chroma</span>
+<span class="kw">from</span> <span class="dc">langchain_core.documents</span> <span class="kw">import</span> <span class="cl">Document</span>
+<span class="kw">from</span> <span class="dc">dotenv</span> <span class="kw">import</span> <span class="fn">load_dotenv</span>
+
+<span class="fn">load_dotenv</span>()
+
+<span class="cm"># pip install langchain-chroma</span>
+
+embedding_model = <span class="cl">HuggingFaceEmbeddings</span>(
+    model_name=<span class="st">"sentence-transformers/all-MiniLM-L6-v2"</span>
+)
+
+documents = [
+    <span class="cl">Document</span>(page_content=<span class="st">"Virat Kohli is a batsman playing for Royal Challengers Bangalore."</span>, metadata={<span class="st">"team"</span>: <span class="st">"RCB"</span>}),
+    <span class="cl">Document</span>(page_content=<span class="st">"Rohit Sharma is the captain of Mumbai Indians."</span>, metadata={<span class="st">"team"</span>: <span class="st">"MI"</span>}),
+    <span class="cl">Document</span>(page_content=<span class="st">"MS Dhoni is the legendary captain of Chennai Super Kings."</span>, metadata={<span class="st">"team"</span>: <span class="st">"CSK"</span>}),
+    <span class="cl">Document</span>(page_content=<span class="st">"Jasprit Bumrah is a fast bowler playing for Mumbai Indians."</span>, metadata={<span class="st">"team"</span>: <span class="st">"MI"</span>}),
+    <span class="cl">Document</span>(page_content=<span class="st">"Ravindra Jadeja is an all-rounder and bowler for Chennai Super Kings."</span>, metadata={<span class="st">"team"</span>: <span class="st">"CSK"</span>}),
+]
+
+<span class="cm"># Initialize vector store</span>
+vector_store = <span class="cl">Chroma</span>(
+    embedding_function=embedding_model,
+    persist_directory=<span class="st">"chromadb"</span>,
+    collection_name=<span class="st">"sample"</span>
+)
+
+<span class="cm"># Add documents</span>
+vector_store.<span class="fn">add_documents</span>(documents)
+
+<span class="cm"># Similarity search</span>
+query = <span class="st">"Who among these are bowlers?"</span>
+result = vector_store.<span class="fn">similarity_search</span>(query, k=<span class="nm">3</span>)
+<span class="fn">print</span>(result)
+
+<span class="cm"># Similarity search with scores</span>
+result_with_scores = vector_store.<span class="fn">similarity_search_with_score</span>(query, k=<span class="nm">3</span>)
+<span class="fn">print</span>(result_with_scores)
+</pre>
+</div>
+
+<!-- 24: wikipedia_retriever.py -->
+<div class="code-section" id="sec24">
+<div class="file-header"><span class="filename">wikipedia_retriever.py</span><span class="badge">Retrievers</span><button class="copy-btn" onclick="copyCode(24)">Copy</button></div>
+<div class="desc">Uses WikipediaRetriever to fetch and retrieve relevant documents from Wikipedia based on a search query. Install: pip install wikipedia</div>
+<pre id="code24"><span class="kw">from</span> <span class="dc">langchain_community.retrievers</span> <span class="kw">import</span> <span class="cl">WikipediaRetriever</span>
+
+<span class="cm"># pip install wikipedia</span>
+retriever = <span class="cl">WikipediaRetriever</span>(top_k_results=<span class="nm">2</span>, lang=<span class="st">"en"</span>)
+
+query = <span class="st">"Indian Premier League"</span>
+docs = retriever.<span class="fn">invoke</span>(query)
+
+<span class="fn">print</span>(<span class="st">f"Number of documents: </span>{<span class="fn">len</span>(docs)}<span class="st">"</span>)
+
+<span class="kw">for</span> i, doc <span class="kw">in</span> <span class="fn">enumerate</span>(docs):
+    <span class="fn">print</span>(<span class="st">f"\nResult {i+1}:"</span>)
+    <span class="fn">print</span>(<span class="st">"Content:"</span>, doc.page_content[:<span class="nm">300</span>])
+</pre>
+</div>
+
+<!-- 25: vector_store_retriever.py -->
+<div class="code-section" id="sec25">
+<div class="file-header"><span class="filename">vector_store_retriever.py</span><span class="badge">Chroma Retriever</span><button class="copy-btn" onclick="copyCode(25)">Copy</button></div>
+<div class="desc">Converts a Chroma vector store into a retriever using as_retriever(). Performs semantic search to find the top 2 most relevant documents for a given query.</div>
+<pre id="code25"><span class="kw">from</span> <span class="dc">langchain_huggingface</span> <span class="kw">import</span> <span class="cl">HuggingFaceEmbeddings</span>
+<span class="kw">from</span> <span class="dc">langchain_chroma</span> <span class="kw">import</span> <span class="cl">Chroma</span>
+<span class="kw">from</span> <span class="dc">langchain_core.documents</span> <span class="kw">import</span> <span class="cl">Document</span>
+<span class="kw">from</span> <span class="dc">dotenv</span> <span class="kw">import</span> <span class="fn">load_dotenv</span>
+
+<span class="fn">load_dotenv</span>()
+
+embedding_model = <span class="cl">HuggingFaceEmbeddings</span>(
+    model_name=<span class="st">"sentence-transformers/all-MiniLM-L6-v2"</span>
+)
+
+source_docs = [
+    <span class="cl">Document</span>(page_content=<span class="st">"LangChain is a framework for building LLM applications."</span>),
+    <span class="cl">Document</span>(page_content=<span class="st">"Chroma is a vector database optimized for LLM search."</span>),
+    <span class="cl">Document</span>(page_content=<span class="st">"Embeddings are numerical representations of text."</span>),
+    <span class="cl">Document</span>(page_content=<span class="st">"OpenAI provides powerful language models via API."</span>),
+]
+
+vector_store = <span class="cl">Chroma</span>.<span class="fn">from_documents</span>(
+    documents=source_docs,
+    embedding=embedding_model,
+    collection_name=<span class="st">"sample"</span>
+)
+
+<span class="cm"># Convert vector store to retriever</span>
+retriever = vector_store.<span class="fn">as_retriever</span>(
+    search_type=<span class="st">"similarity"</span>,
+    search_kwargs={<span class="st">"k"</span>: <span class="nm">2</span>}
+)
+
+query = <span class="st">"What is Chroma used for?"</span>
+result = retriever.<span class="fn">invoke</span>(query)
+<span class="fn">print</span>(result)
+</pre>
+</div>
+
+<!-- 26: youtube_rag.py -->
+<div class="code-section" id="sec26">
+<div class="file-header"><span class="filename">youtube_rag.py</span><span class="badge">YouTube Q&A RAG</span><button class="copy-btn" onclick="copyCode(26)">Copy</button></div>
+<div class="desc">Full YouTube RAG pipeline: fetches transcript → splits into chunks → embeds with HuggingFace → stores in FAISS → creates retriever → answers questions from the video transcript using Gemini.</div>
+<pre id="code26"><span class="kw">from</span> <span class="dc">youtube_transcript_api</span> <span class="kw">import</span> <span class="cl">YouTubeTranscriptApi</span>, <span class="cl">TranscriptsDisabled</span>
+<span class="kw">from</span> <span class="dc">langchain.text_splitter</span> <span class="kw">import</span> <span class="cl">RecursiveCharacterTextSplitter</span>
+<span class="kw">from</span> <span class="dc">langchain_huggingface</span> <span class="kw">import</span> <span class="cl">HuggingFaceEmbeddings</span>
+<span class="kw">from</span> <span class="dc">langchain_community.vectorstores</span> <span class="kw">import</span> FAISS
+<span class="kw">from</span> <span class="dc">langchain_google_genai</span> <span class="kw">import</span> <span class="cl">ChatGoogleGenerativeAI</span>
+<span class="kw">from</span> <span class="dc">langchain_core.prompts</span> <span class="kw">import</span> <span class="cl">PromptTemplate</span>
+<span class="kw">from</span> <span class="dc">dotenv</span> <span class="kw">import</span> <span class="fn">load_dotenv</span>
+
+<span class="fn">load_dotenv</span>()
+
+<span class="cm"># pip install youtube-transcript-api</span>
+
+<span class="cm"># Step 1: Fetch transcript</span>
+video_id = <span class="st">"YOUR_VIDEO_ID_HERE"</span>
+<span class="kw">try</span>:
+    transcript_list = <span class="cl">YouTubeTranscriptApi</span>.<span class="fn">fetch</span>(video_id, languages=[<span class="st">"en"</span>])
+    transcript = <span class="st">" "</span>.<span class="fn">join</span>([chunk.text <span class="kw">for</span> chunk <span class="kw">in</span> transcript_list])
+<span class="kw">except</span> <span class="cl">TranscriptsDisabled</span>:
+    transcript = <span class="st">"No captions available for this video."</span>
+
+<span class="cm"># Step 2: Split transcript into chunks</span>
+splitter = <span class="cl">RecursiveCharacterTextSplitter</span>(chunk_size=<span class="nm">300</span>, chunk_overlap=<span class="nm">50</span>)
+chunks = splitter.<span class="fn">create_documents</span>([transcript])
+<span class="fn">print</span>(<span class="st">f"Total chunks: </span>{<span class="fn">len</span>(chunks)}<span class="st">"</span>)
+
+<span class="cm"># Step 3: Create embeddings and vector store</span>
+embedding_model = <span class="cl">HuggingFaceEmbeddings</span>(model_name=<span class="st">"sentence-transformers/all-MiniLM-L6-v2"</span>)
+vector_store = FAISS.<span class="fn">from_documents</span>(chunks, embedding=embedding_model)
+
+<span class="cm"># Step 4: Create retriever</span>
+retriever = vector_store.<span class="fn">as_retriever</span>(
+    search_type=<span class="st">"similarity"</span>,
+    search_kwargs={<span class="st">"k"</span>: <span class="nm">3</span>}
+)
+
+<span class="cm"># Step 5: Define prompt</span>
+template = <span class="st">"""You are a helpful assistant. Answer only from the provided transcript context.
+If the context is insufficient, answer 'I don't know.'
+
+Context: {context}
+
+Question: {question}"""</span>
+
+prompt = <span class="cl">PromptTemplate</span>(input_variables=[<span class="st">"context"</span>, <span class="st">"question"</span>], template=template)
+
+<span class="cm"># Step 6: Initialize model</span>
+model = <span class="cl">ChatGoogleGenerativeAI</span>(model=<span class="st">"gemini-2.5-flash"</span>)
+
+<span class="cm"># Step 7: Query</span>
+question = <span class="st">"What is the video talking about?"</span>
+retrieved_docs = retriever.<span class="fn">invoke</span>(question)
+context_text = <span class="st">"\n"</span>.<span class="fn">join</span>([doc.page_content <span class="kw">for</span> doc <span class="kw">in</span> retrieved_docs])
+final_prompt = prompt.<span class="fn">invoke</span>({<span class="st">"context"</span>: context_text, <span class="st">"question"</span>: question})
+answer = model.<span class="fn">invoke</span>(final_prompt)
+<span class="fn">print</span>(answer.content)
+</pre>
+</div>
+
+<!-- 27: tools.py -->
+<div class="code-section" id="sec27">
+<div class="file-header"><span class="filename">tools.py</span><span class="badge">Tools</span><button class="copy-btn" onclick="copyCode(27)">Copy</button></div>
+<div class="desc">Introduces the @tool decorator that turns a Python function into a LangChain tool. Shows how to invoke, inspect the name, docstring, and JSON schema of a tool.</div>
+<pre id="code27"><span class="kw">from</span> <span class="dc">langchain_core.tools</span> <span class="kw">import</span> tool
+
+<span class="dc">@tool</span>
+<span class="kw">def</span> <span class="fn">multiply</span>(a: int, b: int) -> int:
+    <span class="st">"""Multiply two numbers."""</span>
+    <span class="kw">return</span> a * b
+
+<span class="cm"># Invoke the tool</span>
+result = multiply.<span class="fn">invoke</span>({<span class="st">"a"</span>: <span class="nm">5</span>, <span class="st">"b"</span>: <span class="nm">4</span>})
+<span class="fn">print</span>(<span class="st">"Result:"</span>, result)
+
+<span class="cm"># Inspect tool properties</span>
+<span class="fn">print</span>(<span class="st">"Name:"</span>, multiply.name)
+<span class="fn">print</span>(<span class="st">"Description:"</span>, multiply.description)
+<span class="fn">print</span>(<span class="st">"Args schema:"</span>, multiply.<span class="fn">args</span>)
+<span class="fn">print</span>(<span class="st">"JSON Schema:"</span>, multiply.<span class="fn">get_input_schema</span>().<span class="fn">model_json_schema</span>())
+</pre>
+</div>
+
+<!-- 28: structured_tool.py -->
+<div class="code-section" id="sec28">
+<div class="file-header"><span class="filename">structured_tool.py</span><span class="badge">StructuredTool</span><button class="copy-btn" onclick="copyCode(28)">Copy</button></div>
+<div class="desc">Uses StructuredTool.from_function() with a Pydantic input schema for richer validation and description. More professional and scalable than the basic @tool decorator.</div>
+<pre id="code28"><span class="kw">from</span> <span class="dc">langchain.tools</span> <span class="kw">import</span> <span class="cl">StructuredTool</span>
+<span class="kw">from</span> <span class="dc">pydantic</span> <span class="kw">import</span> BaseModel, Field
+
+<span class="kw">class</span> <span class="cl">MultiplyInput</span>(BaseModel):
+    a: int = <span class="cl">Field</span>(description=<span class="st">"The first number to multiply"</span>, required=<span class="kw">True</span>)
+    b: int = <span class="cl">Field</span>(description=<span class="st">"The second number to multiply"</span>, required=<span class="kw">True</span>)
+
+<span class="kw">def</span> <span class="fn">multiply_function</span>(a: int, b: int) -> int:
+    <span class="kw">return</span> a * b
+
+multiply_tool = <span class="cl">StructuredTool</span>.<span class="fn">from_function</span>(
+    func=multiply_function,
+    name=<span class="st">"multiply"</span>,
+    description=<span class="st">"Multiplies two numbers."</span>,
+    args_schema=<span class="cl">MultiplyInput</span>
+)
+
+result = multiply_tool.<span class="fn">invoke</span>({<span class="st">"a"</span>: <span class="nm">5</span>, <span class="st">"b"</span>: <span class="nm">4</span>})
+<span class="fn">print</span>(<span class="st">"Result:"</span>, result)
+</pre>
+</div>
+
+<!-- 29: toolkit.py -->
+<div class="code-section" id="sec29">
+<div class="file-header"><span class="filename">toolkit.py</span><span class="badge">Toolkits</span><button class="copy-btn" onclick="copyCode(29)">Copy</button></div>
+<div class="desc">Groups multiple tools (add, multiply, subtract) into a MathToolkit class. Toolkits allow you to manage and pass collections of related tools as a single unit to agents.</div>
+<pre id="code29"><span class="kw">from</span> <span class="dc">langchain_core.tools</span> <span class="kw">import</span> tool
+
+<span class="dc">@tool</span>
+<span class="kw">def</span> <span class="fn">add</span>(a: int, b: int) -> int:
+    <span class="st">"""Add two numbers."""</span>
+    <span class="kw">return</span> a + b
+
+<span class="dc">@tool</span>
+<span class="kw">def</span> <span class="fn">multiply</span>(a: int, b: int) -> int:
+    <span class="st">"""Multiply two numbers."""</span>
+    <span class="kw">return</span> a * b
+
+<span class="dc">@tool</span>
+<span class="kw">def</span> <span class="fn">sub</span>(a: int, b: int) -> int:
+    <span class="st">"""Subtract two numbers."""</span>
+    <span class="kw">return</span> a - b
+
+<span class="kw">class</span> <span class="cl">MathToolkit</span>:
+    <span class="kw">def</span> <span class="fn">get_tools</span>(self):
+        <span class="kw">return</span> [add, multiply, sub]
+
+toolkit = <span class="cl">MathToolkit</span>()
+tools = toolkit.<span class="fn">get_tools</span>()
+
+<span class="kw">for</span> tl <span class="kw">in</span> tools:
+    <span class="fn">print</span>(<span class="st">f"Tool: </span>{tl.name}<span class="st"> — </span>{tl.description}<span class="st">"</span>)
+</pre>
+</div>
+
+<!-- 30: tool_binding.py -->
+<div class="code-section" id="sec30">
+<div class="file-header"><span class="filename">tool_binding.py</span><span class="badge">Tool Binding</span><button class="copy-btn" onclick="copyCode(30)">Copy</button></div>
+<div class="desc">Binds a tool to an LLM using model.bind_tools(). The model doesn't execute the tool but suggests a tool call with the right parameters based on the user's query.</div>
+<pre id="code30"><span class="kw">from</span> <span class="dc">langchain_google_genai</span> <span class="kw">import</span> <span class="cl">ChatGoogleGenerativeAI</span>
+<span class="kw">from</span> <span class="dc">langchain_core.tools</span> <span class="kw">import</span> tool
+<span class="kw">from</span> <span class="dc">dotenv</span> <span class="kw">import</span> <span class="fn">load_dotenv</span>
+
+<span class="fn">load_dotenv</span>()
+
+<span class="dc">@tool</span>
+<span class="kw">def</span> <span class="fn">add</span>(a: int, b: int) -> int:
+    <span class="st">"""Add two numbers."""</span>
+    <span class="kw">return</span> a + b
+
+llm = <span class="cl">ChatGoogleGenerativeAI</span>(model=<span class="st">"gemini-2.5-flash"</span>)
+
+<span class="cm"># Bind tool to the LLM</span>
+llm_with_tools = llm.<span class="fn">bind_tools</span>([add])
+
+<span class="cm"># Model will SUGGEST a tool call, not execute it</span>
+result = llm_with_tools.<span class="fn">invoke</span>(<span class="st">"Can you add 3 with 14?"</span>)
+<span class="fn">print</span>(result)
+<span class="fn">print</span>(<span class="st">"Tool calls:"</span>, result.tool_calls)
+</pre>
+</div>
+
+<!-- 31: enforced_tool_execution.py -->
+<div class="code-section" id="sec31">
+<div class="file-header"><span class="filename">enforced_tool_execution.py</span><span class="badge">Enforced Tool Execution</span><button class="copy-btn" onclick="copyCode(31)">Copy</button></div>
+<div class="desc">The model suggests a tool call, then the program actually executes the tool and feeds the result back to the model to generate a final response. Full multi-turn tool execution loop.</div>
+<pre id="code31"><span class="kw">from</span> <span class="dc">langchain_google_genai</span> <span class="kw">import</span> <span class="cl">ChatGoogleGenerativeAI</span>
+<span class="kw">from</span> <span class="dc">langchain_core.tools</span> <span class="kw">import</span> tool
+<span class="kw">from</span> <span class="dc">langchain_core.messages</span> <span class="kw">import</span> <span class="cl">HumanMessage</span>
+<span class="kw">from</span> <span class="dc">dotenv</span> <span class="kw">import</span> <span class="fn">load_dotenv</span>
+
+<span class="fn">load_dotenv</span>()
+
+<span class="dc">@tool</span>
+<span class="kw">def</span> <span class="fn">add</span>(a: int, b: int) -> int:
+    <span class="st">"""Add two numbers."""</span>
+    <span class="kw">return</span> a + b
+
+llm = <span class="cl">ChatGoogleGenerativeAI</span>(model=<span class="st">"gemini-2.5-flash"</span>)
+llm_with_tools = llm.<span class="fn">bind_tools</span>([add])
+
+user_query = <span class="st">"Add 10 and 9"</span>
+messages = [<span class="cl">HumanMessage</span>(content=user_query)]
+
+<span class="cm"># Step 1: Get model suggestion</span>
+result = llm_with_tools.<span class="fn">invoke</span>(messages)
+messages.<span class="fn">append</span>(result)
+
+<span class="fn">print</span>(<span class="st">"Tool calls:"</span>, result.tool_calls)
+
+<span class="cm"># Step 2: Execute the suggested tool call</span>
+tool_result = add.<span class="fn">invoke</span>(result.tool_calls[<span class="nm">0</span>])
+messages.<span class="fn">append</span>(tool_result)
+
+<span class="cm"># Step 3: Get the final response from model</span>
+final_result = llm_with_tools.<span class="fn">invoke</span>(messages)
+<span class="fn">print</span>(<span class="st">"Final Answer:"</span>, final_result.content)
+</pre>
+</div>
+
+<!-- 32: injected_tool.py -->
+<div class="code-section" id="sec32">
+<div class="file-header"><span class="filename">injected_tool.py</span><span class="badge">InjectedToolArg</span><button class="copy-btn" onclick="copyCode(32)">Copy</button></div>
+<div class="desc">Multi-tool workflow with InjectedToolArg — the output of the get_conversion_rate tool is automatically injected as input to the convert tool. Demonstrates multi-turn tool execution loop.</div>
+<pre id="code32"><span class="kw">from</span> <span class="dc">langchain_google_genai</span> <span class="kw">import</span> <span class="cl">ChatGoogleGenerativeAI</span>
+<span class="kw">from</span> <span class="dc">langchain_core.tools</span> <span class="kw">import</span> tool, InjectedToolArg
+<span class="kw">from</span> <span class="dc">langchain_core.messages</span> <span class="kw">import</span> <span class="cl">HumanMessage</span>, <span class="cl">ToolMessage</span>
+<span class="kw">from</span> <span class="dc">typing</span> <span class="kw">import</span> Annotated
+<span class="kw">from</span> <span class="dc">dotenv</span> <span class="kw">import</span> <span class="fn">load_dotenv</span>
+
+<span class="fn">load_dotenv</span>()
+
+<span class="dc">@tool</span>
+<span class="kw">def</span> <span class="fn">get_conversion_rate</span>(base_currency: str, target_currency: str) -> float:
+    <span class="st">"""Return the realtime currency conversion rate from base_currency to target_currency."""</span>
+    <span class="kw">return</span> <span class="nm">140.3</span>  <span class="cm"># Static example: 1 USD = 140.3 NPR</span>
+
+<span class="dc">@tool</span>
+<span class="kw">def</span> <span class="fn">convert</span>(base_currency_value: float,
+             conversion_rate: Annotated[float, <span class="cl">InjectedToolArg</span>]) -> float:
+    <span class="st">"""Converts a base currency value into target currency using a conversion rate."""</span>
+    <span class="kw">return</span> base_currency_value * conversion_rate
+
+llm = <span class="cl">ChatGoogleGenerativeAI</span>(model=<span class="st">"gemini-2.5-flash"</span>)
+llm_with_tools = llm.<span class="fn">bind_tools</span>([get_conversion_rate, convert])
+
+<span class="cm"># Build tool lookup dictionary</span>
+tool_map = {<span class="st">"get_conversion_rate"</span>: get_conversion_rate, <span class="st">"convert"</span>: convert}
+
+query = <span class="st">"What is the conversion factor between USD and NPR and convert 10 USD to NPR?"</span>
+messages = [<span class="cl">HumanMessage</span>(content=query)]
+
+<span class="cm"># Step 1: Initial LLM call</span>
+ai_message = llm_with_tools.<span class="fn">invoke</span>(messages)
+messages.<span class="fn">append</span>(ai_message)
+
+conversion_rate = <span class="kw">None</span>
+
+<span class="cm"># Step 2: Multi-turn tool execution loop</span>
+<span class="kw">while</span> ai_message.content == <span class="st">""</span> <span class="kw">and</span> ai_message.tool_calls:
+    tool_messages = []
+    <span class="kw">for</span> tool_call <span class="kw">in</span> ai_message.tool_calls:
+        tool_name = tool_call[<span class="st">"name"</span>]
+        tool_id   = tool_call[<span class="st">"id"</span>]
+        tool_args = tool_call[<span class="st">"args"</span>]
+
+        <span class="fn">print</span>(<span class="st">f"Executing tool: </span>{tool_name}<span class="st"> with args: </span>{tool_args}<span class="st">"</span>)
+
+        <span class="kw">if</span> tool_name == <span class="st">"get_conversion_rate"</span>:
+            tool_output = get_conversion_rate.<span class="fn">invoke</span>(tool_args)
+            conversion_rate = tool_output
+        <span class="kw">elif</span> tool_name == <span class="st">"convert"</span>:
+            <span class="kw">if</span> <span class="st">"conversion_rate"</span> <span class="kw">not in</span> tool_args:
+                tool_args[<span class="st">"conversion_rate"</span>] = conversion_rate
+            tool_output = convert.<span class="fn">invoke</span>(tool_args)
+        <span class="kw">else</span>:
+            tool_output = <span class="st">"Unknown tool"</span>
+
+        tool_msg = <span class="cl">ToolMessage</span>(
+            content=<span class="fn">str</span>(tool_output),
+            tool_call_id=tool_id,
+            name=tool_name
+        )
+        tool_messages.<span class="fn">append</span>(tool_msg)
+
+    messages.<span class="fn">extend</span>(tool_messages)
+    ai_message = llm_with_tools.<span class="fn">invoke</span>(messages)
+    messages.<span class="fn">append</span>(ai_message)
+
+<span class="fn">print</span>(<span class="st">"Final Result:"</span>, messages[-<span class="nm">1</span>].content)
+</pre>
+</div>
+
+<!-- 33: basic_graph.py -->
+<div class="code-section" id="sec33">
+<div class="file-header"><span class="filename">basic_graph.py</span><span class="badge">LangGraph Basics</span><button class="copy-btn" onclick="copyCode(33)">Copy</button></div>
+<div class="desc">First LangGraph example. Defines a state, creates a greeting node that modifies it, builds a graph with start → node → end edges, and invokes it.</div>
+<pre id="code33"><span class="kw">from</span> <span class="dc">typing</span> <span class="kw">import</span> TypedDict
+<span class="kw">from</span> <span class="dc">langgraph.graph</span> <span class="kw">import</span> <span class="cl">StateGraph</span>, START, END
+
+<span class="kw">class</span> <span class="cl">MyMessageState</span>(TypedDict):
+    message: str
+
+<span class="kw">def</span> <span class="fn">greeting_node</span>(state: <span class="cl">MyMessageState</span>) -> <span class="cl">MyMessageState</span>:
+    <span class="st">"""A simple node that adds a greeting message to the state."""</span>
+    state[<span class="st">"message"</span>] = <span class="st">"Hello "</span> + state[<span class="st">"message"</span>] + <span class="st">". Welcome to LangGraph!"</span>
+    <span class="kw">return</span> state
+
+<span class="cm"># Build the graph</span>
+graph = <span class="cl">StateGraph</span>(<span class="cl">MyMessageState</span>)
+graph.<span class="fn">add_node</span>(<span class="st">"initial"</span>, greeting_node)
+graph.<span class="fn">add_edge</span>(START, <span class="st">"initial"</span>)
+graph.<span class="fn">add_edge</span>(<span class="st">"initial"</span>, END)
+
+bot = graph.<span class="fn">compile</span>()
+
+<span class="fn">print</span>(bot.<span class="fn">get_graph</span>().<span class="fn">draw_ascii</span>())
+
+response = bot.<span class="fn">invoke</span>({<span class="st">"message"</span>: <span class="st">"LearningHub"</span>})
+<span class="fn">print</span>(response)
+</pre>
+</div>
+
+<!-- 34: complex_graph.py -->
+<div class="code-section" id="sec34">
+<div class="file-header"><span class="filename">complex_graph.py</span><span class="badge">Structured States</span><button class="copy-btn" onclick="copyCode(34)">Copy</button></div>
+<div class="desc">Multi-node graph with a structured state containing name, age, skills, and result. Three nodes progressively enrich the result field as data flows through the graph.</div>
+<pre id="code34"><span class="kw">from</span> <span class="dc">typing</span> <span class="kw">import</span> TypedDict, List
+<span class="kw">from</span> <span class="dc">langgraph.graph</span> <span class="kw">import</span> <span class="cl">StateGraph</span>, START, END
+
+<span class="kw">class</span> <span class="cl">AgentState</span>(TypedDict):
+    name: str
+    age: int
+    skills: List[str]
+    result: str
+
+<span class="kw">def</span> <span class="fn">first_node</span>(state: <span class="cl">AgentState</span>) -> <span class="cl">AgentState</span>:
+    <span class="st">"""This is the first node."""</span>
+    state[<span class="st">"result"</span>] = state[<span class="st">"name"</span>] + <span class="st">", welcome to the system. "</span>
+    <span class="kw">return</span> state
+
+<span class="kw">def</span> <span class="fn">second_node</span>(state: <span class="cl">AgentState</span>) -> <span class="cl">AgentState</span>:
+    <span class="st">"""This is the second node."""</span>
+    skills = <span class="st">", "</span>.<span class="fn">join</span>(state[<span class="st">"skills"</span>])
+    state[<span class="st">"result"</span>] += <span class="st">f"You have skills in </span>{skills}<span class="st">. "</span>
+    <span class="kw">return</span> state
+
+<span class="kw">def</span> <span class="fn">third_node</span>(state: <span class="cl">AgentState</span>) -> <span class="cl">AgentState</span>:
+    <span class="st">"""This is the third node."""</span>
+    state[<span class="st">"result"</span>] += <span class="st">f"You are </span>{state[<span class="st">'age'</span>]}<span class="st"> years old."</span>
+    <span class="kw">return</span> state
+
+<span class="cm"># Build the graph</span>
+graph = <span class="cl">StateGraph</span>(<span class="cl">AgentState</span>)
+graph.<span class="fn">add_node</span>(<span class="st">"first_node"</span>,  first_node)
+graph.<span class="fn">add_node</span>(<span class="st">"second_node"</span>, second_node)
+graph.<span class="fn">add_node</span>(<span class="st">"third_node"</span>,  third_node)
+
+graph.<span class="fn">add_edge</span>(START, <span class="st">"first_node"</span>)
+graph.<span class="fn">add_edge</span>(<span class="st">"first_node"</span>,  <span class="st">"second_node"</span>)
+graph.<span class="fn">add_edge</span>(<span class="st">"second_node"</span>, <span class="st">"third_node"</span>)
+graph.<span class="fn">add_edge</span>(<span class="st">"third_node"</span>,  END)
+
+bot = graph.<span class="fn">compile</span>()
+
+input_state = {
+    <span class="st">"name"</span>: <span class="st">"Alice"</span>,
+    <span class="st">"age"</span>: <span class="nm">30</span>,
+    <span class="st">"skills"</span>: [<span class="st">"Python"</span>, <span class="st">"ML"</span>, <span class="st">"Data Science"</span>],
+    <span class="st">"result"</span>: <span class="st">""</span>
+}
+
+response = bot.<span class="fn">invoke</span>(input_state)
+<span class="fn">print</span>(response[<span class="st">"result"</span>])
+</pre>
+</div>
+
+<!-- 35: conditional_graph.py -->
+<div class="code-section" id="sec35">
+<div class="file-header"><span class="filename">conditional_graph.py</span><span class="badge">Multi-branch Decision</span><button class="copy-btn" onclick="copyCode(35)">Copy</button></div>
+<div class="desc">Graph with conditional routing. A router node reads the operation field and directs flow to either the adder node or the subtractor node using add_conditional_edges().</div>
+<pre id="code35"><span class="kw">from</span> <span class="dc">typing</span> <span class="kw">import</span> TypedDict
+<span class="kw">from</span> <span class="dc">langgraph.graph</span> <span class="kw">import</span> <span class="cl">StateGraph</span>, START, END
+
+<span class="kw">class</span> <span class="cl">AgentState</span>(TypedDict):
+    number1: int
+    number2: int
+    operation: str
+    result: int
+
+<span class="kw">def</span> <span class="fn">adder</span>(state: <span class="cl">AgentState</span>) -> <span class="cl">AgentState</span>:
+    <span class="st">"""This node adds two numbers."""</span>
+    state[<span class="st">"result"</span>] = state[<span class="st">"number1"</span>] + state[<span class="st">"number2"</span>]
+    <span class="kw">return</span> state
+
+<span class="kw">def</span> <span class="fn">subtract</span>(state: <span class="cl">AgentState</span>) -> <span class="cl">AgentState</span>:
+    <span class="st">"""This node subtracts two numbers."""</span>
+    state[<span class="st">"result"</span>] = state[<span class="st">"number1"</span>] - state[<span class="st">"number2"</span>]
+    <span class="kw">return</span> state
+
+<span class="kw">def</span> <span class="fn">decide_next_node</span>(state: <span class="cl">AgentState</span>) -> str:
+    <span class="st">"""Router: selects the next node based on operation."""</span>
+    <span class="kw">if</span> state[<span class="st">"operation"</span>] == <span class="st">"+"</span>:
+        <span class="kw">return</span> <span class="st">"add_op"</span>
+    <span class="kw">elif</span> state[<span class="st">"operation"</span>] == <span class="st">"-"</span>:
+        <span class="kw">return</span> <span class="st">"sub_op"</span>
+
+<span class="cm"># Build the graph</span>
+graph = <span class="cl">StateGraph</span>(<span class="cl">AgentState</span>)
+graph.<span class="fn">add_node</span>(<span class="st">"add_node"</span>,  adder)
+graph.<span class="fn">add_node</span>(<span class="st">"sub_node"</span>,  subtract)
+graph.<span class="fn">add_node</span>(<span class="st">"router"</span>,    <span class="kw">lambda</span> state: state)  <span class="cm"># pass-through</span>
+
+graph.<span class="fn">add_edge</span>(START, <span class="st">"router"</span>)
+graph.<span class="fn">add_conditional_edges</span>(<span class="st">"router"</span>, decide_next_node, {
+    <span class="st">"add_op"</span>: <span class="st">"add_node"</span>,
+    <span class="st">"sub_op"</span>: <span class="st">"sub_node"</span>
+})
+graph.<span class="fn">add_edge</span>(<span class="st">"add_node"</span>, END)
+graph.<span class="fn">add_edge</span>(<span class="st">"sub_node"</span>, END)
+
+bot = graph.<span class="fn">compile</span>()
+
+<span class="cm"># Test with addition</span>
+result = bot.<span class="fn">invoke</span>({<span class="st">"number1"</span>: <span class="nm">10</span>, <span class="st">"number2"</span>: <span class="nm">4</span>, <span class="st">"operation"</span>: <span class="st">"+"</span>, <span class="st">"result"</span>: <span class="nm">0</span>})
+<span class="fn">print</span>(<span class="st">"Addition result:"</span>, result[<span class="st">"result"</span>])
+
+<span class="cm"># Test with subtraction</span>
+result = bot.<span class="fn">invoke</span>({<span class="st">"number1"</span>: <span class="nm">10</span>, <span class="st">"number2"</span>: <span class="nm">4</span>, <span class="st">"operation"</span>: <span class="st">"-"</span>, <span class="st">"result"</span>: <span class="nm">0</span>})
+<span class="fn">print</span>(<span class="st">"Subtraction result:"</span>, result[<span class="st">"result"</span>])
+</pre>
+</div>
+
+<!-- 36: complex_conditional.py -->
+<div class="code-section" id="sec36">
+<div class="file-header"><span class="filename">complex_conditional.py</span><span class="badge">Complex Conditional</span><button class="copy-btn" onclick="copyCode(36)">Copy</button></div>
+<div class="desc">Multi-branch graph with two sequential routing steps. Handles two separate math operations (number1 op1 number2) and (number3 op2 number4) through two independent conditional edges.</div>
+<pre id="code36"><span class="kw">from</span> <span class="dc">typing</span> <span class="kw">import</span> TypedDict
+<span class="kw">from</span> <span class="dc">langgraph.graph</span> <span class="kw">import</span> <span class="cl">StateGraph</span>, START, END
+
+<span class="kw">class</span> <span class="cl">AgentState</span>(TypedDict):
+    number1: int
+    number2: int
+    number3: int
+    number4: int
+    operation1: str
+    operation2: str
+    result1: int
+    result2: int
+
+<span class="kw">def</span> <span class="fn">adder1</span>(state): state[<span class="st">"result1"</span>] = state[<span class="st">"number1"</span>] + state[<span class="st">"number2"</span>]; <span class="kw">return</span> state
+<span class="kw">def</span> <span class="fn">subtractor1</span>(state): state[<span class="st">"result1"</span>] = state[<span class="st">"number1"</span>] - state[<span class="st">"number2"</span>]; <span class="kw">return</span> state
+<span class="kw">def</span> <span class="fn">adder2</span>(state): state[<span class="st">"result2"</span>] = state[<span class="st">"number3"</span>] + state[<span class="st">"number4"</span>]; <span class="kw">return</span> state
+<span class="kw">def</span> <span class="fn">subtractor2</span>(state): state[<span class="st">"result2"</span>] = state[<span class="st">"number3"</span>] - state[<span class="st">"number4"</span>]; <span class="kw">return</span> state
+
+<span class="kw">def</span> <span class="fn">choose_next_node1</span>(state) -> str:
+    <span class="kw">return</span> <span class="st">"add1"</span> <span class="kw">if</span> state[<span class="st">"operation1"</span>] == <span class="st">"+"</span> <span class="kw">else</span> <span class="st">"sub1"</span>
+
+<span class="kw">def</span> <span class="fn">choose_next_node2</span>(state) -> str:
+    <span class="kw">return</span> <span class="st">"add2"</span> <span class="kw">if</span> state[<span class="st">"operation2"</span>] == <span class="st">"+"</span> <span class="kw">else</span> <span class="st">"sub2"</span>
+
+graph = <span class="cl">StateGraph</span>(<span class="cl">AgentState</span>)
+graph.<span class="fn">add_node</span>(<span class="st">"adder1"</span>,     adder1)
+graph.<span class="fn">add_node</span>(<span class="st">"subtractor1"</span>, subtractor1)
+graph.<span class="fn">add_node</span>(<span class="st">"adder2"</span>,     adder2)
+graph.<span class="fn">add_node</span>(<span class="st">"subtractor2"</span>, subtractor2)
+graph.<span class="fn">add_node</span>(<span class="st">"router1"</span>,    <span class="kw">lambda</span> s: s)
+graph.<span class="fn">add_node</span>(<span class="st">"router2"</span>,    <span class="kw">lambda</span> s: s)
+
+graph.<span class="fn">add_edge</span>(START, <span class="st">"router1"</span>)
+graph.<span class="fn">add_conditional_edges</span>(<span class="st">"router1"</span>, choose_next_node1, {<span class="st">"add1"</span>: <span class="st">"adder1"</span>, <span class="st">"sub1"</span>: <span class="st">"subtractor1"</span>})
+graph.<span class="fn">add_edge</span>(<span class="st">"adder1"</span>,     <span class="st">"router2"</span>)
+graph.<span class="fn">add_edge</span>(<span class="st">"subtractor1"</span>, <span class="st">"router2"</span>)
+graph.<span class="fn">add_conditional_edges</span>(<span class="st">"router2"</span>, choose_next_node2, {<span class="st">"add2"</span>: <span class="st">"adder2"</span>, <span class="st">"sub2"</span>: <span class="st">"subtractor2"</span>})
+graph.<span class="fn">add_edge</span>(<span class="st">"adder2"</span>,     END)
+graph.<span class="fn">add_edge</span>(<span class="st">"subtractor2"</span>, END)
+
+bot = graph.<span class="fn">compile</span>()
+
+result = bot.<span class="fn">invoke</span>({<span class="st">"number1"</span>:<span class="nm">1</span>,<span class="st">"number2"</span>:<span class="nm">2</span>,<span class="st">"number3"</span>:<span class="nm">7</span>,<span class="st">"number4"</span>:<span class="nm">4</span>,<span class="st">"operation1"</span>:<span class="st">"+"</span>,<span class="st">"operation2"</span>:<span class="st">"-"</span>,<span class="st">"result1"</span>:<span class="nm">0</span>,<span class="st">"result2"</span>:<span class="nm">0</span>})
+<span class="fn">print</span>(<span class="st">"Result 1:"</span>, result[<span class="st">"result1"</span>])
+<span class="fn">print</span>(<span class="st">"Result 2:"</span>, result[<span class="st">"result2"</span>])
+</pre>
+</div>
+
+<!-- 37: number_game.py -->
+<div class="code-section" id="sec37">
+<div class="file-header"><span class="filename">number_game.py</span><span class="badge">Loops in LangGraph</span><button class="copy-btn" onclick="copyCode(37)">Copy</button></div>
+<div class="desc">Demonstrates iterative looping in LangGraph. A number guessing game where the graph loops up to 5 times using conditional edges before exiting.</div>
+<pre id="code37"><span class="kw">from</span> <span class="dc">typing</span> <span class="kw">import</span> TypedDict, List
+<span class="kw">from</span> <span class="dc">langgraph.graph</span> <span class="kw">import</span> <span class="cl">StateGraph</span>, START, END
+<span class="kw">import</span> <span class="dc">random</span>
+
+<span class="kw">class</span> <span class="cl">AgentState</span>(TypedDict):
+    name: str
+    number: List[int]
+    counter: int
+
+<span class="kw">def</span> <span class="fn">greeting_node</span>(state: <span class="cl">AgentState</span>) -> <span class="cl">AgentState</span>:
+    <span class="st">"""Greeting node: says hi and resets counter."""</span>
+    state[<span class="st">"name"</span>] = <span class="st">f"Hi there, </span>{state[<span class="st">'name'</span>]}<span class="st">! We start the game."</span>
+    state[<span class="st">"counter"</span>] = <span class="nm">0</span>
+    <span class="kw">return</span> state
+
+<span class="kw">def</span> <span class="fn">random_state</span>(state: <span class="cl">AgentState</span>) -> <span class="cl">AgentState</span>:
+    <span class="st">"""Generates a random number guess between 0 and 10."""</span>
+    state[<span class="st">"number"</span>].<span class="fn">append</span>(random.<span class="fn">randint</span>(<span class="nm">0</span>, <span class="nm">10</span>))
+    state[<span class="st">"counter"</span>] += <span class="nm">1</span>
+    <span class="kw">return</span> state
+
+<span class="kw">def</span> <span class="fn">should_continue</span>(state: <span class="cl">AgentState</span>) -> str:
+    <span class="st">"""Router: loop up to 5 times then exit."""</span>
+    <span class="kw">if</span> state[<span class="st">"counter"</span>] < <span class="nm">5</span>:
+        <span class="fn">print</span>(<span class="st">f"Loop </span>{state[<span class="st">'counter'</span>]}<span class="st">: guessed </span>{state[<span class="st">'number'</span>][-<span class="nm">1</span>]}<span class="st">"</span>)
+        <span class="kw">return</span> <span class="st">"loop"</span>
+    <span class="kw">else</span>:
+        <span class="kw">return</span> <span class="st">"exit"</span>
+
+graph = <span class="cl">StateGraph</span>(<span class="cl">AgentState</span>)
+graph.<span class="fn">add_node</span>(<span class="st">"greet"</span>,  greeting_node)
+graph.<span class="fn">add_node</span>(<span class="st">"random"</span>, random_state)
+
+graph.<span class="fn">add_edge</span>(START, <span class="st">"greet"</span>)
+graph.<span class="fn">add_edge</span>(<span class="st">"greet"</span>, <span class="st">"random"</span>)
+graph.<span class="fn">add_conditional_edges</span>(<span class="st">"random"</span>, should_continue, {
+    <span class="st">"loop"</span>: <span class="st">"random"</span>,
+    <span class="st">"exit"</span>: END
+})
+
+bot = graph.<span class="fn">compile</span>()
+response = bot.<span class="fn">invoke</span>({<span class="st">"name"</span>: <span class="st">"Abishek"</span>, <span class="st">"number"</span>: [], <span class="st">"counter"</span>: <span class="nm">0</span>})
+<span class="fn">print</span>(<span class="st">"All guesses:"</span>, response[<span class="st">"number"</span>])
+</pre>
+</div>
+
+<!-- 38: ai_agent_chatbot.py -->
+<div class="code-section" id="sec38">
+<div class="file-header"><span class="filename">ai_agent_chatbot.py</span><span class="badge">Conversational AI</span><button class="copy-btn" onclick="copyCode(38)">Copy</button></div>
+<div class="desc">Integrates a real Gemini model into a LangGraph workflow. A process node invokes the model with the current messages. The graph loops as a conversational chatbot in a terminal.</div>
+<pre id="code38"><span class="kw">from</span> <span class="dc">typing</span> <span class="kw">import</span> TypedDict, List
+<span class="kw">from</span> <span class="dc">langgraph.graph</span> <span class="kw">import</span> <span class="cl">StateGraph</span>, START, END
+<span class="kw">from</span> <span class="dc">langchain_core.messages</span> <span class="kw">import</span> <span class="cl">HumanMessage</span>
+<span class="kw">from</span> <span class="dc">langchain_google_genai</span> <span class="kw">import</span> <span class="cl">ChatGoogleGenerativeAI</span>
+<span class="kw">from</span> <span class="dc">dotenv</span> <span class="kw">import</span> <span class="fn">load_dotenv</span>
+
+<span class="fn">load_dotenv</span>()
+
+model = <span class="cl">ChatGoogleGenerativeAI</span>(model=<span class="st">"gemini-2.5-flash"</span>)
+
+<span class="kw">class</span> <span class="cl">AgentState</span>(TypedDict):
+    messages: List[<span class="cl">HumanMessage</span>]
+
+<span class="kw">def</span> <span class="fn">process</span>(state: <span class="cl">AgentState</span>) -> <span class="cl">AgentState</span>:
+    response = model.<span class="fn">invoke</span>(state[<span class="st">"messages"</span>])
+    <span class="fn">print</span>(<span class="st">f"\nAI: </span>{response.content}<span class="st">\n"</span>)
+    state[<span class="st">"messages"</span>].<span class="fn">append</span>(response)
+    <span class="kw">return</span> state
+
+graph = <span class="cl">StateGraph</span>(<span class="cl">AgentState</span>)
+graph.<span class="fn">add_node</span>(<span class="st">"process"</span>, process)
+graph.<span class="fn">add_edge</span>(START, <span class="st">"process"</span>)
+graph.<span class="fn">add_edge</span>(<span class="st">"process"</span>, END)
+
+bot = graph.<span class="fn">compile</span>()
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    user_input = <span class="fn">input</span>(<span class="st">"You: "</span>)
+    <span class="kw">if</span> user_input.<span class="fn">lower</span>() == <span class="st">"exit"</span>:
+        <span class="kw">break</span>
+    input_state = {<span class="st">"messages"</span>: [<span class="cl">HumanMessage</span>(content=user_input)]}
+    bot.<span class="fn">invoke</span>(input_state)
+</pre>
+</div>
+
+<!-- 39: langgraph_tool_nodes.py -->
+<div class="code-section" id="sec39">
+<div class="file-header"><span class="filename">langgraph_tool_nodes.py</span><span class="badge">Tool Nodes</span><button class="copy-btn" onclick="copyCode(39)">Copy</button></div>
+<div class="desc">Full LangGraph agent with ToolNode. Defines add, sub, mult, div tools and builds a graph where the model calls tools as needed, loops back, and ends when no more tool calls remain.</div>
+<pre id="code39"><span class="kw">from</span> <span class="dc">typing</span> <span class="kw">import</span> TypedDict, Annotated, Sequence
+<span class="kw">from</span> <span class="dc">langgraph.graph</span> <span class="kw">import</span> <span class="cl">StateGraph</span>, START, END
+<span class="kw">from</span> <span class="dc">langgraph.graph.message</span> <span class="kw">import</span> <span class="fn">add_messages</span>
+<span class="kw">from</span> <span class="dc">langgraph.prebuilt</span> <span class="kw">import</span> <span class="cl">ToolNode</span>
+<span class="kw">from</span> <span class="dc">langchain_core.messages</span> <span class="kw">import</span> <span class="cl">BaseMessage</span>, <span class="cl">SystemMessage</span>
+<span class="kw">from</span> <span class="dc">langchain_core.tools</span> <span class="kw">import</span> tool
+<span class="kw">from</span> <span class="dc">langchain_google_genai</span> <span class="kw">import</span> <span class="cl">ChatGoogleGenerativeAI</span>
+<span class="kw">from</span> <span class="dc">dotenv</span> <span class="kw">import</span> <span class="fn">load_dotenv</span>
+
+<span class="fn">load_dotenv</span>()
+
+<span class="dc">@tool</span>
+<span class="kw">def</span> <span class="fn">add</span>(a: int, b: int) -> int:
+    <span class="st">"""Add two numbers."""</span>
+    <span class="kw">return</span> a + b
+
+<span class="dc">@tool</span>
+<span class="kw">def</span> <span class="fn">sub</span>(a: int, b: int) -> int:
+    <span class="st">"""Subtract two numbers."""</span>
+    <span class="kw">return</span> a - b
+
+<span class="dc">@tool</span>
+<span class="kw">def</span> <span class="fn">mult</span>(a: int, b: int) -> int:
+    <span class="st">"""Multiply two numbers."""</span>
+    <span class="kw">return</span> a * b
+
+<span class="dc">@tool</span>
+<span class="kw">def</span> <span class="fn">div</span>(a: float, b: float) -> float:
+    <span class="st">"""Divide two numbers."""</span>
+    <span class="kw">return</span> a / b
+
+my_tools = [add, sub, mult, div]
+
+model = <span class="cl">ChatGoogleGenerativeAI</span>(model=<span class="st">"gemini-2.5-flash"</span>)
+model = model.<span class="fn">bind_tools</span>(my_tools)
+
+<span class="kw">class</span> <span class="cl">AgentState</span>(TypedDict):
+    messages: Annotated[Sequence[<span class="cl">BaseMessage</span>], <span class="fn">add_messages</span>]
+
+<span class="kw">def</span> <span class="fn">model_call</span>(state: <span class="cl">AgentState</span>) -> <span class="cl">AgentState</span>:
+    system_prompt = <span class="cl">SystemMessage</span>(content=<span class="st">"You are an AI assistant. Answer queries to the best of your ability."</span>)
+    inputs = [system_prompt] + <span class="fn">list</span>(state[<span class="st">"messages"</span>])
+    response = model.<span class="fn">invoke</span>(inputs)
+    <span class="kw">return</span> {<span class="st">"messages"</span>: <span class="fn">list</span>(state[<span class="st">"messages"</span>]) + [response]}
+
+<span class="kw">def</span> <span class="fn">should_continue</span>(state: <span class="cl">AgentState</span>) -> str:
+    last_message = state[<span class="st">"messages"</span>][-<span class="nm">1</span>]
+    <span class="kw">if not</span> <span class="fn">hasattr</span>(last_message, <span class="st">"tool_calls"</span>) <span class="kw">or not</span> last_message.tool_calls:
+        <span class="kw">return</span> <span class="st">"end"</span>
+    <span class="kw">return</span> <span class="st">"continue"</span>
+
+graph = <span class="cl">StateGraph</span>(<span class="cl">AgentState</span>)
+graph.<span class="fn">add_node</span>(<span class="st">"model_call"</span>, model_call)
+graph.<span class="fn">add_node</span>(<span class="st">"tools"</span>, <span class="cl">ToolNode</span>(my_tools))
+
+graph.<span class="fn">add_edge</span>(START, <span class="st">"model_call"</span>)
+graph.<span class="fn">add_conditional_edges</span>(<span class="st">"model_call"</span>, should_continue, {
+    <span class="st">"continue"</span>: <span class="st">"tools"</span>,
+    <span class="st">"end"</span>: END
+})
+graph.<span class="fn">add_edge</span>(<span class="st">"tools"</span>, <span class="st">"model_call"</span>)
+
+bot = graph.<span class="fn">compile</span>()
+
+<span class="kw">def</span> <span class="fn">print_stream</span>(stream):
+    <span class="kw">for</span> s <span class="kw">in</span> stream:
+        <span class="kw">for</span> node_name, node_value <span class="kw">in</span> s.<span class="fn">items</span>():
+            <span class="kw">if</span> <span class="st">"messages"</span> <span class="kw">in</span> node_value:
+                message = node_value[<span class="st">"messages"</span>][-<span class="nm">1</span>]
+                <span class="fn">print</span>(<span class="st">f"[</span>{node_name}<span class="st">]: </span>{message}<span class="st">"</span>)
+
+user_input = {<span class="st">"messages"</span>: [(<span class="st">"user"</span>, <span class="st">"Add 2 and 4, then multiply the result with 6. Also tell me a joke."</span>)]}
+<span class="fn">print_stream</span>(bot.<span class="fn">stream</span>(user_input, stream_mode=<span class="st">"values"</span>))
+</pre>
+</div>
+
+<!-- 40: email_crafter_agent.py -->
+<div class="code-section" id="sec40">
+<div class="file-header"><span class="filename">email_crafter_agent.py</span><span class="badge">Document Editing Agent</span><button class="copy-btn" onclick="copyCode(40)">Copy</button></div>
+<div class="desc">AI Document Editing Agent powered by LangGraph. Two tools: update (modifies document content) and save (writes to a .txt file). The graph loops between agent and tools until the save tool is called.</div>
+<pre id="code40"><span class="kw">from</span> <span class="dc">typing</span> <span class="kw">import</span> TypedDict, Annotated, Sequence
+<span class="kw">from</span> <span class="dc">langgraph.graph</span> <span class="kw">import</span> <span class="cl">StateGraph</span>, START, END
+<span class="kw">from</span> <span class="dc">langgraph.graph.message</span> <span class="kw">import</span> <span class="fn">add_messages</span>
+<span class="kw">from</span> <span class="dc">langgraph.prebuilt</span> <span class="kw">import</span> <span class="cl">ToolNode</span>
+<span class="kw">from</span> <span class="dc">langchain_core.messages</span> <span class="kw">import</span> <span class="cl">BaseMessage</span>, <span class="cl">HumanMessage</span>, <span class="cl">ToolMessage</span>, <span class="cl">SystemMessage</span>
+<span class="kw">from</span> <span class="dc">langchain_core.tools</span> <span class="kw">import</span> tool
+<span class="kw">from</span> <span class="dc">langchain_google_genai</span> <span class="kw">import</span> <span class="cl">ChatGoogleGenerativeAI</span>
+<span class="kw">from</span> <span class="dc">dotenv</span> <span class="kw">import</span> <span class="fn">load_dotenv</span>
+
+<span class="fn">load_dotenv</span>()
+
+model = <span class="cl">ChatGoogleGenerativeAI</span>(model=<span class="st">"gemini-2.5-flash"</span>)
+
+document_content = <span class="st">""</span>
+
+<span class="kw">class</span> <span class="cl">AgentState</span>(TypedDict):
+    messages: Annotated[Sequence[<span class="cl">BaseMessage</span>], <span class="fn">add_messages</span>]
+
+<span class="dc">@tool</span>
+<span class="kw">def</span> <span class="fn">update</span>(content: str) -> str:
+    <span class="st">"""Update the document with the provided content."""</span>
+    <span class="kw">global</span> document_content
+    document_content = content
+    <span class="kw">return</span> <span class="st">f"Document updated successfully. Current content:\n</span>{document_content}<span class="st">"</span>
+
+<span class="dc">@tool</span>
+<span class="kw">def</span> <span class="fn">save</span>(file_name: str) -> str:
+    <span class="st">"""Save the current document to a text file and finish the process."""</span>
+    <span class="kw">global</span> document_content
+    <span class="kw">if not</span> file_name:
+        file_name = <span class="st">"document.txt"</span>
+    <span class="kw">try</span>:
+        <span class="kw">with</span> <span class="fn">open</span>(file_name, <span class="st">"w"</span>) <span class="kw">as</span> f:
+            f.<span class="fn">write</span>(document_content)
+        <span class="kw">return</span> <span class="st">f"Document saved successfully as </span>{file_name}<span class="st">"</span>
+    <span class="kw">except</span> Exception <span class="kw">as</span> e:
+        <span class="kw">return</span> <span class="st">f"Error saving file: </span>{e}<span class="st">"</span>
+
+my_tools = [update, save]
+model_with_tools = model.<span class="fn">bind_tools</span>(my_tools)
+tool_node = <span class="cl">ToolNode</span>(my_tools)
+
+system_prompt = <span class="cl">SystemMessage</span>(content=<span class="st">"""You are an email drafter, a helpful writing assistant.
+Help the user update and modify documents. If the user wants to update or modify content,
+use the update tool. If the user wants to save and finish, use the save tool.
+Current document content: """</span> + document_content)
+
+<span class="kw">def</span> <span class="fn">agent</span>(state: <span class="cl">AgentState</span>) -> <span class="cl">AgentState</span>:
+    <span class="kw">if not</span> state[<span class="st">"messages"</span>]:
+        user_message = <span class="cl">HumanMessage</span>(content=<span class="st">"I am ready to help you update a document. What would you like to create?"</span>)
+    <span class="kw">else</span>:
+        user_input = <span class="fn">input</span>(<span class="st">"You: "</span>)
+        user_message = <span class="cl">HumanMessage</span>(content=user_input)
+
+    all_messages = [system_prompt] + <span class="fn">list</span>(state[<span class="st">"messages"</span>]) + [user_message]
+    response = model_with_tools.<span class="fn">invoke</span>(all_messages)
+    <span class="fn">print</span>(<span class="st">f"\nAI: </span>{response.content}<span class="st">"</span>)
+
+    <span class="kw">if</span> <span class="fn">hasattr</span>(response, <span class="st">"tool_calls"</span>) <span class="kw">and</span> response.tool_calls:
+        <span class="fn">print</span>(<span class="st">f"Invoking tool: </span>{[tc[<span class="st">'name'</span>] <span class="kw">for</span> tc <span class="kw">in</span> response.tool_calls]}<span class="st">"</span>)
+
+    <span class="kw">return</span> {<span class="st">"messages"</span>: <span class="fn">list</span>(state[<span class="st">"messages"</span>]) + [user_message, response]}
+
+<span class="kw">def</span> <span class="fn">should_continue</span>(state: <span class="cl">AgentState</span>) -> str:
+    messages = state[<span class="st">"messages"</span>]
+    <span class="kw">if not</span> messages:
+        <span class="kw">return</span> <span class="st">"continue"</span>
+    <span class="kw">for</span> message <span class="kw">in</span> <span class="fn">reversed</span>(messages):
+        <span class="kw">if</span> isinstance(message, <span class="cl">ToolMessage</span>) <span class="kw">and</span> <span class="st">"saved"</span> <span class="kw">in</span> message.content.<span class="fn">lower</span>():
+            <span class="kw">return</span> <span class="st">"end"</span>
+    <span class="kw">return</span> <span class="st">"continue"</span>
+
+graph = <span class="cl">StateGraph</span>(<span class="cl">AgentState</span>)
+graph.<span class="fn">add_node</span>(<span class="st">"agent"</span>, agent)
+graph.<span class="fn">add_node</span>(<span class="st">"tools"</span>, tool_node)
+graph.<span class="fn">add_edge</span>(START, <span class="st">"agent"</span>)
+graph.<span class="fn">add_edge</span>(<span class="st">"agent"</span>, <span class="st">"tools"</span>)
+graph.<span class="fn">add_conditional_edges</span>(<span class="st">"tools"</span>, should_continue, {<span class="st">"continue"</span>: <span class="st">"agent"</span>, <span class="st">"end"</span>: END})
+
+bot = graph.<span class="fn">compile</span>()
+
+<span class="kw">def</span> <span class="fn">run_document_agent</span>():
+    state = {<span class="st">"messages"</span>: []}
+    <span class="kw">for</span> step <span class="kw">in</span> bot.<span class="fn">stream</span>(state):
+        <span class="kw">if</span> <span class="st">"messages"</span> <span class="kw">in</span> step:
+            <span class="fn">print</span>(step[<span class="st">"messages"</span>][-<span class="nm">1</span>])
+    <span class="fn">print</span>(<span class="st">"Conversation ended."</span>)
+
+<span class="fn">run_document_agent</span>()
+</pre>
+</div>
+
+<!-- 41: pdf_rag_agent.py -->
+<div class="code-section" id="sec41">
+<div class="file-header"><span class="filename">pdf_rag_agent.py</span><span class="badge">PDF RAG Agent</span><button class="copy-btn" onclick="copyCode(41)">Copy</button></div>
+<div class="desc">Complete PDF RAG Agent using LangGraph + Gemini. Loads a PDF → splits → embeds in Chroma → creates a retriever tool → builds an agent graph that retrieves and answers questions from the PDF.</div>
+<pre id="code41"><span class="kw">from</span> <span class="dc">typing</span> <span class="kw">import</span> TypedDict, Annotated, Sequence
+<span class="kw">from</span> <span class="dc">langgraph.graph</span> <span class="kw">import</span> <span class="cl">StateGraph</span>, START, END
+<span class="kw">from</span> <span class="dc">langchain_core.messages</span> <span class="kw">import</span> <span class="cl">BaseMessage</span>, <span class="cl">HumanMessage</span>, <span class="cl">SystemMessage</span>, <span class="cl">ToolMessage</span>
+<span class="kw">from</span> <span class="dc">operator</span> <span class="kw">import</span> add as add_messages
+<span class="kw">from</span> <span class="dc">langchain_google_genai</span> <span class="kw">import</span> <span class="cl">ChatGoogleGenerativeAI</span>, <span class="cl">GoogleGenerativeAIEmbeddings</span>
+<span class="kw">from</span> <span class="dc">langchain_community.document_loaders</span> <span class="kw">import</span> <span class="cl">PyPDFLoader</span>
+<span class="kw">from</span> <span class="dc">langchain.text_splitter</span> <span class="kw">import</span> <span class="cl">RecursiveCharacterTextSplitter</span>
+<span class="kw">from</span> <span class="dc">langchain_chroma</span> <span class="kw">import</span> <span class="cl">Chroma</span>
+<span class="kw">from</span> <span class="dc">langchain_core.tools</span> <span class="kw">import</span> tool
+<span class="kw">from</span> <span class="dc">dotenv</span> <span class="kw">import</span> <span class="fn">load_dotenv</span>
+<span class="kw">import</span> <span class="dc">os</span>, <span class="dc">pathlib</span>
+
+<span class="fn">load_dotenv</span>()
+
+<span class="cm"># ── 1. Load model ──────────────────────────────────────────────────────────</span>
+llm = <span class="cl">ChatGoogleGenerativeAI</span>(model=<span class="st">"gemini-2.5-flash"</span>)
+embedding_model = <span class="cl">GoogleGenerativeAIEmbeddings</span>(model=<span class="st">"models/gemini-embedding-001"</span>)
+
+<span class="cm"># ── 2. Load PDF ────────────────────────────────────────────────────────────</span>
+pdf_path = <span class="st">"stock.pdf"</span>
+<span class="kw">if</span> pathlib.Path(pdf_path).<span class="fn">exists</span>():
+    <span class="kw">try</span>:
+        loader = <span class="cl">PyPDFLoader</span>(pdf_path)
+        pages = loader.<span class="fn">load</span>()
+        <span class="fn">print</span>(<span class="st">f"PDF loaded: </span>{<span class="fn">len</span>(pages)}<span class="st"> pages"</span>)
+    <span class="kw">except</span> Exception <span class="kw">as</span> e:
+        <span class="kw">raise</span> RuntimeError(<span class="st">f"Error loading PDF: </span>{e}<span class="st">"</span>)
+<span class="kw">else</span>:
+    <span class="kw">raise</span> FileNotFoundError(<span class="st">"stock.pdf not found"</span>)
+
+<span class="cm"># ── 3. Split ───────────────────────────────────────────────────────────────</span>
+text_splitter = <span class="cl">RecursiveCharacterTextSplitter</span>(chunk_size=<span class="nm">1000</span>, chunk_overlap=<span class="nm">200</span>)
+pages_split = text_splitter.<span class="fn">split_documents</span>(pages)
+<span class="fn">print</span>(<span class="st">f"Total chunks: </span>{<span class="fn">len</span>(pages_split)}<span class="st">"</span>)
+
+<span class="cm"># ── 4. Vector store ────────────────────────────────────────────────────────</span>
+<span class="kw">try</span>:
+    vector_store = <span class="cl">Chroma</span>.<span class="fn">from_documents</span>(
+        documents=pages_split,
+        embedding=embedding_model,
+        collection_name=<span class="st">"stock_market"</span>
+    )
+    <span class="fn">print</span>(<span class="st">"Vector store created successfully."</span>)
+<span class="kw">except</span> Exception <span class="kw">as</span> e:
+    <span class="kw">raise</span> RuntimeError(<span class="st">f"Vector store error: </span>{e}<span class="st">"</span>)
+
+<span class="cm"># ── 5. Retriever ───────────────────────────────────────────────────────────</span>
+retriever = vector_store.<span class="fn">as_retriever</span>(
+    search_type=<span class="st">"similarity"</span>,
+    search_kwargs={<span class="st">"k"</span>: <span class="nm">3</span>}
+)
+
+<span class="cm"># ── 6. Retriever tool ──────────────────────────────────────────────────────</span>
+<span class="dc">@tool</span>
+<span class="kw">def</span> <span class="fn">retriever_tool</span>(query: str) -> str:
+    <span class="st">"""Searches and returns information from the stock market performance report document."""</span>
+    documents = retriever.<span class="fn">invoke</span>(query)
+    <span class="kw">if not</span> documents:
+        <span class="kw">return</span> <span class="st">"No relevant information found."</span>
+    results = []
+    <span class="kw">for</span> i, doc <span class="kw">in</span> <span class="fn">enumerate</span>(documents):
+        results.<span class="fn">append</span>(<span class="st">f"Source </span>{i+<span class="nm">1</span>}<span class="st">:\n</span>{doc.page_content}<span class="st">"</span>)
+    <span class="kw">return</span> <span class="st">"\n\n"</span>.<span class="fn">join</span>(results)
+
+my_tools = [retriever_tool]
+tool_map = {<span class="st">"retriever_tool"</span>: retriever_tool}
+llm_with_tools = llm.<span class="fn">bind_tools</span>(my_tools)
+
+<span class="cm"># ── 7. Agent state ─────────────────────────────────────────────────────────</span>
+<span class="kw">class</span> <span class="cl">AgentState</span>(TypedDict):
+    messages: Annotated[Sequence[<span class="cl">BaseMessage</span>], add_messages]
+
+system_prompt = <span class="st">"""You are an intelligent AI assistant answering questions about
+the stock market performance in 2024 based on the PDF loaded into the knowledge base.
+Use the retriever_tool to find relevant information. Always cite specific parts of the document."""</span>
+
+<span class="kw">def</span> <span class="fn">should_continue</span>(state: <span class="cl">AgentState</span>) -> bool:
+    last_message = state[<span class="st">"messages"</span>][-<span class="nm">1</span>]
+    tool_calls = <span class="fn">getattr</span>(last_message, <span class="st">"tool_calls"</span>, [])
+    <span class="kw">return</span> <span class="fn">len</span>(tool_calls) > <span class="nm">0</span>
+
+<span class="kw">def</span> <span class="fn">call_llm</span>(state: <span class="cl">AgentState</span>) -> <span class="cl">AgentState</span>:
+    messages = [<span class="cl">SystemMessage</span>(content=system_prompt)] + <span class="fn">list</span>(state[<span class="st">"messages"</span>])
+    message = llm_with_tools.<span class="fn">invoke</span>(messages)
+    <span class="kw">return</span> {<span class="st">"messages"</span>: [message]}
+
+<span class="kw">def</span> <span class="fn">take_action</span>(state: <span class="cl">AgentState</span>) -> <span class="cl">AgentState</span>:
+    tool_calls = state[<span class="st">"messages"</span>][-<span class="nm">1</span>].tool_calls
+    results = []
+    <span class="kw">for</span> t <span class="kw">in</span> tool_calls:
+        t_name = t[<span class="st">"name"</span>]
+        t_id   = t[<span class="st">"id"</span>]
+        t_args = t[<span class="st">"args"</span>]
+        <span class="fn">print</span>(<span class="st">f"Executing tool: </span>{t_name}<span class="st"> with input: </span>{t_args}<span class="st">"</span>)
+        <span class="kw">if</span> t_name <span class="kw">in</span> tool_map:
+            result = tool_map[t_name].<span class="fn">invoke</span>(t_args.<span class="fn">get</span>(<span class="st">"query"</span>, <span class="st">""</span>))
+        <span class="kw">else</span>:
+            result = <span class="st">"Tool not found"</span>
+        <span class="fn">print</span>(<span class="st">f"Tool result: </span>{result[:<span class="nm">100</span>]}<span class="st">..."</span>)
+        results.<span class="fn">append</span>(<span class="cl">ToolMessage</span>(content=<span class="fn">str</span>(result), tool_call_id=t_id, name=t_name))
+    <span class="fn">print</span>(<span class="st">"Tools executed."</span>)
+    <span class="kw">return</span> {<span class="st">"messages"</span>: results}
+
+<span class="cm"># ── 8. Build graph ─────────────────────────────────────────────────────────</span>
+graph = <span class="cl">StateGraph</span>(<span class="cl">AgentState</span>)
+graph.<span class="fn">add_node</span>(<span class="st">"llm"</span>,             call_llm)
+graph.<span class="fn">add_node</span>(<span class="st">"retriever_agent"</span>, take_action)
+
+graph.<span class="fn">add_edge</span>(START, <span class="st">"llm"</span>)
+graph.<span class="fn">add_conditional_edges</span>(<span class="st">"llm"</span>, should_continue, {<span class="kw">True</span>: <span class="st">"retriever_agent"</span>, <span class="kw">False</span>: END})
+graph.<span class="fn">add_edge</span>(<span class="st">"retriever_agent"</span>, <span class="st">"llm"</span>)
+
+rag_agent = graph.<span class="fn">compile</span>()
+
+<span class="cm"># ── 9. Run agent ───────────────────────────────────────────────────────────</span>
+<span class="kw">def</span> <span class="fn">run_agent</span>():
+    <span class="kw">while</span> <span class="kw">True</span>:
+        user_input = <span class="fn">input</span>(<span class="st">"What is your question? (type 'exit' to quit): "</span>)
+        <span class="kw">if</span> user_input.<span class="fn">lower</span>() <span class="kw">in</span> [<span class="st">"exit"</span>, <span class="st">"quit"</span>]:
+            <span class="kw">break</span>
+        messages = [<span class="cl">HumanMessage</span>(content=user_input)]
+        response = rag_agent.<span class="fn">invoke</span>({<span class="st">"messages"</span>: messages})
+        <span class="fn">print</span>(<span class="st">"\nAgent Response:"</span>, response[<span class="st">"messages"</span>][-<span class="nm">1</span>].content)
+
+<span class="fn">run_agent</span>()
+</pre>
+</div>
+
+</div>
+</div>
+</div>
+
+<script>
+let current = 0;
+function show(n) {
+  document.getElementById('sec' + current).classList.remove('active');
+  document.getElementById('nav' + current).classList.remove('active');
+  current = n;
+  document.getElementById('sec' + n).classList.add('active');
+  document.getElementById('nav' + n).classList.add('active');
+  document.querySelector('.content').scrollTop = 0;
+}
+
+function copyCode(n) {
+  const pre = document.getElementById('code' + n);
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = pre.parentElement.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+function filterNav(q) {
+  const items = document.querySelectorAll('.nav-item');
+  items.forEach(item => {
+    item.style.display = item.textContent.toLowerCase().includes(q.toLowerCase()) ? 'flex' : 'none';
+  });
+}
+</script>
+</body>
+</html>
